@@ -31,6 +31,10 @@ pub fn ShardEnvelope::new(
   if original_length < 1 || original_length > codec.data_count() * payload.length() {
     raise InvalidEnvelope("original length must fit in data shards")
   }
+  let expected_length = (original_length - 1) / codec.data_count() + 1
+  if payload.length() != expected_length {
+    raise InvalidEnvelope("shard payload length is not canonical")
+  }
   {
     set_id,
     stripe_index,
@@ -173,6 +177,9 @@ pub fn ShardEnvelope::from_bytes(
   }
   if original_length < 1 || original_length > data_count * length {
     raise InvalidEnvelope("original length does not fit data shards")
+  }
+  if length != (original_length - 1) / data_count + 1 {
+    raise InvalidEnvelope("shard payload length is not canonical")
   }
   let payload = Bytes::from_array(input[32:input.length()].to_array())
   let header = input[0:28].to_array()
