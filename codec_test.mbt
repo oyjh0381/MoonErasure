@@ -68,6 +68,13 @@ test "invalid configuration and mismatched lengths are rejected" {
     _ => false
   }
   assert_true(bad_config)
+  let overflow_config = try @moonerasure.Codec::new(2147483647, 2147483647) catch {
+    @moonerasure.InvalidConfiguration(_) => true
+    _ => false
+  } noraise {
+    _ => false
+  }
+  assert_true(overflow_config)
   let codec = try! @moonerasure.Codec::new(2, 1)
   let bad_length = try codec.encode([b"a", b"bb"]) catch {
     @moonerasure.InvalidShardLength(..) => true

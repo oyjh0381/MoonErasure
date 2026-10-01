@@ -15,7 +15,8 @@ pub fn Codec::new(
   parity_count : Int,
   max_encoded_bytes? : Int = 16_777_216,
 ) -> Codec raise ErasureError {
-  if data_count < 1 || parity_count < 1 || data_count + parity_count > 256 {
+  if data_count < 1 || data_count > 255 || parity_count < 1 ||
+    parity_count > 255 || data_count > 256 - parity_count {
     raise InvalidConfiguration("require 1..255 data/parity shards, total <= 256")
   }
   if max_encoded_bytes < data_count + parity_count ||
