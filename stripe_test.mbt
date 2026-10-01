@@ -39,3 +39,22 @@ test "stripe rejects duplicate and mixed frames" {
   }
   assert_true(mixed)
 }
+
+///|
+test "stripe rejects a noncanonical nonzero padding tail" {
+  let codec = try! @moonerasure.Codec::new(2, 1)
+  let encoded = try! codec.encode_all([b"ab", b"cx"])
+  let frames : Array[@moonerasure.ShardEnvelope] = []
+  for index = 0; index < encoded.length(); index = index + 1 {
+    frames.push(
+      try! @moonerasure.ShardEnvelope::new(codec, 3, 0, index, 3, encoded[index]),
+    )
+  }
+  let rejected = try @moonerasure.recover_stripe(codec, frames, 3, 0) catch {
+    @moonerasure.InvalidEnvelope(_) => true
+    _ => false
+  } noraise {
+    _ => false
+  }
+  assert_true(rejected)
+}

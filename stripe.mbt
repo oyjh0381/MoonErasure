@@ -133,6 +133,11 @@ pub fn recover_stripe(
     }
   }
   let rebuilt = codec.reconstruct(present)
+  for position = original_length; position < codec.data_count() * shard_length; position = position + 1 {
+    if rebuilt[position / shard_length][position % shard_length] != b'\x00' {
+      raise InvalidEnvelope("nonzero bytes in padded data tail")
+    }
+  }
   let payload = Array::make(original_length, b'\x00')
   for position = 0; position < original_length; position = position + 1 {
     payload[position] = rebuilt[position / shard_length][position % shard_length]
