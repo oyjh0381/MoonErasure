@@ -200,20 +200,25 @@ pub fn Codec::reconstruct(
   } else {
     let decoder = self.generator.selected_rows(selected_indices).inverse(self.field)
     for row = 0; row < self.data_count; row = row + 1 {
-      let result = Array::make(length, b'\x00')
-      for column = 0; column < self.data_count; column = column + 1 {
-        let coefficient = decoder.cells[row][column]
-        if coefficient != 0 {
-          let source = selected_shards[column]
-          for position = 0; position < length; position = position + 1 {
-            result[position] = (
-              result[position].to_int() ^
-              self.field.multiply(coefficient, source[position].to_int())
-            ).to_byte()
+      match shards[row] {
+        Some(shard) => data.push(copy_shard(shard))
+        None => {
+          let result = Array::make(length, b'\x00')
+          for column = 0; column < self.data_count; column = column + 1 {
+            let coefficient = decoder.cells[row][column]
+            if coefficient != 0 {
+              let source = selected_shards[column]
+              for position = 0; position < length; position = position + 1 {
+                result[position] = (
+                  result[position].to_int() ^
+                  self.field.multiply(coefficient, source[position].to_int())
+                ).to_byte()
+              }
+            }
           }
+          data.push(Bytes::from_array(result))
         }
       }
-      data.push(Bytes::from_array(result))
     }
   }
   let result = self.encode_all(data)
