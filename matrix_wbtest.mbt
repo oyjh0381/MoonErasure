@@ -7,7 +7,10 @@ test "matrix inverse handles a zero diagonal by swapping rows" {
   matrix.cells[1][0] = 1
   matrix.cells[1][1] = 1
   let inverse = try! matrix.inverse(field)
-  assert_eq(matrix.multiply(inverse, field).cells, Matrix::identity(2).cells)
+  let identity = Matrix::zero(2, 2)
+  identity.cells[0][0] = 1
+  identity.cells[1][1] = 1
+  assert_eq(matrix.multiply(inverse, field).cells, identity.cells)
 }
 
 ///|

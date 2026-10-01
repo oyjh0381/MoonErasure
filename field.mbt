@@ -1,7 +1,7 @@
 ///|
 /// GF(2^8) with irreducible polynomial 0x11d and generator 2.
 /// Keeping tables inside a codec avoids mutable global state across backends.
-priv struct Field {
+pub struct Field {
   exp : Array[Int]
   log : Array[Int]
 }

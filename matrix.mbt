@@ -1,6 +1,6 @@
 ///|
 /// Small field matrix used only for codec construction and erasure recovery.
-priv struct Matrix {
+pub struct Matrix {
   rows : Int
   cols : Int
   cells : Array[Array[Int]]
@@ -13,15 +13,6 @@ fn Matrix::zero(rows : Int, cols : Int) -> Matrix {
     cells.push(Array::make(cols, 0))
   }
   { rows, cols, cells }
-}
-
-///|
-fn Matrix::identity(size : Int) -> Matrix {
-  let result = Matrix::zero(size, size)
-  for i = 0; i < size; i = i + 1 {
-    result.cells[i][i] = 1
-  }
-  result
 }
 
 ///|
