@@ -48,3 +48,38 @@ test "session bounded cache evicts and still reconstructs correctly" {
   assert_eq(session.cache_misses(), 3)
   assert_eq(session.cache_hits(), 0)
 }
+
+///|
+test "cached decoder still rejects an inconsistent extra shard" {
+  let codec = try! @moonerasure.Codec::new(3, 2)
+  let session = try! @moonerasure.RecoverySession::new(codec)
+  let source : Array[Bytes] = [b"abc", b"def", b"ghi"]
+  let encoded = try! codec.encode_all(source)
+  let intact : Array[Bytes?] = []
+  for index = 0; index < encoded.length(); index = index + 1 {
+    if index == 0 {
+      intact.push(None)
+    } else {
+      intact.push(Some(encoded[index]))
+    }
+  }
+  assert_eq(try! session.reconstruct(intact), encoded)
+  let inconsistent : Array[Bytes?] = []
+  for index = 0; index < encoded.length(); index = index + 1 {
+    if index == 0 {
+      inconsistent.push(None)
+    } else if index == 4 {
+      inconsistent.push(Some(b"BAD"))
+    } else {
+      inconsistent.push(Some(encoded[index]))
+    }
+  }
+  let code = try session.reconstruct(inconsistent) catch {
+    error => error.code()
+  } noraise {
+    _ => "unexpected success"
+  }
+  assert_eq(code, "ERASURE_INCONSISTENT_SHARD")
+  assert_eq(session.cache_hits(), 0)
+  assert_eq(session.cache_misses(), 1)
+}

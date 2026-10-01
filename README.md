@@ -53,8 +53,10 @@ The example drops two shards per stripe and reconstructs them from the remaining
 | `moon run examples/scrub` | Frame inventory, health inspection, and persisted-slot repair. |
 | `moon run examples/range` | Recover a byte range by fetching only overlapping stripes. |
 | `moon run examples/stream` | Encode arbitrary input chunks and decode one stripe at a time. |
+| `moon run examples/benchmark --target native` | Verified fixed workload for local timing of repeated loss patterns. |
 
 All examples exit with a failing assertion if the round trip is wrong. [API guide](docs/API.md) explains each public workflow; [wire format](docs/WIRE_FORMAT.md) records byte layouts and compatibility rules.
+See [performance notes](docs/PERFORMANCE.md) for complexity and reproducible timing guidance.
 
 ## Capacity and failure boundary
 
