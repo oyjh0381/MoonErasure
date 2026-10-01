@@ -3,6 +3,7 @@
 /// frames are returned from `push` and are not retained by the parser.
 pub struct BundleStream {
   mut pending : Array[Byte]
+  mut cursor : Int
   mut stage : Int
   mut expected_frames : Int
   mut parsed_frames : Int
@@ -32,6 +33,7 @@ pub fn BundleStream::new(
   }
   {
     pending: [],
+    cursor: 0,
     stage: 0,
     expected_frames: -1,
     parsed_frames: 0,
@@ -57,14 +59,26 @@ pub fn BundleStream::parsed_frame_count(self : BundleStream) -> Int {
 
 ///|
 pub fn BundleStream::buffered_bytes(self : BundleStream) -> Int {
-  self.pending.length()
+  self.pending.length() - self.cursor
 }
 
 ///|
 fn BundleStream::consume_prefix(self : BundleStream, length : Int) -> Bytes {
-  let prefix = Bytes::from_array(self.pending[0:length].to_owned())
-  self.pending = self.pending[length:self.pending.length()].to_owned()
+  let prefix = Bytes::from_array(
+    self.pending[self.cursor:self.cursor + length].to_owned(),
+  )
+  self.cursor = self.cursor + length
   prefix
+}
+
+///|
+/// Compact once per input chunk, rather than copying the remaining bundle
+/// after every parsed frame in a chunk containing many frames.
+fn BundleStream::compact(self : BundleStream) -> Unit {
+  if self.cursor > 0 {
+    self.pending = self.pending[self.cursor:self.pending.length()].to_owned()
+    self.cursor = 0
+  }
 }
 
 ///|
@@ -163,13 +177,13 @@ pub fn BundleStream::push(
   let mut working = true
   while working {
     if self.stage == 0 {
-      if self.pending.length() >= 24 {
+      if self.buffered_bytes() >= 24 {
         self.accept_header()
       } else {
         working = false
       }
     } else if self.stage == 1 {
-      if self.pending.length() >= 32 {
+      if self.buffered_bytes() >= 32 {
         self.accept_manifest()
       } else {
         working = false
@@ -177,12 +191,12 @@ pub fn BundleStream::push(
     } else if self.stage == 2 {
       if self.parsed_frames == self.expected_frames {
         self.stage = 3
-        if self.pending.length() != 0 {
+        if self.buffered_bytes() != 0 {
           raise InvalidEnvelope("trailing bytes after complete bundle")
         }
         working = false
       } else if self.next_frame_length == -1 {
-        if self.pending.length() >= 4 {
+        if self.buffered_bytes() >= 4 {
           let encoded_length = self.consume_prefix(4)
           let length = read_bounded_int(encoded_length, 0)
           if length < 33 || length > self.max_input_bytes {
@@ -192,7 +206,7 @@ pub fn BundleStream::push(
         } else {
           working = false
         }
-      } else if self.pending.length() >= self.next_frame_length {
+      } else if self.buffered_bytes() >= self.next_frame_length {
         let encoded = self.consume_prefix(self.next_frame_length)
         completed.push(self.accept_frame(encoded))
         self.next_frame_length = -1
@@ -203,13 +217,14 @@ pub fn BundleStream::push(
       working = false
     }
   }
+  self.compact()
   completed
 }
 
 ///|
 /// Confirm that the full bundle ended exactly at a frame boundary.
 pub fn BundleStream::finish(self : BundleStream) -> Manifest raise ErasureError {
-  if self.stage != 3 || self.pending.length() != 0 {
+  if self.stage != 3 || self.buffered_bytes() != 0 {
     raise InvalidEnvelope("truncated streaming bundle")
   }
   match self.manifest {
