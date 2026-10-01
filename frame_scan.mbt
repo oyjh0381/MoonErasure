@@ -57,13 +57,22 @@ pub fn scan_frames(
   inputs : Array[Bytes],
   max_frames? : Int = 4096,
   max_encoded_bytes? : Int = 16_777_216,
+  max_total_bytes? : Int = 134_217_728,
 ) -> FrameScan raise ErasureError {
-  if max_frames < 0 || max_frames > 65536 || inputs.length() > max_frames {
+  if max_frames < 0 || max_frames > 1_048_576 || inputs.length() > max_frames {
     raise ResourceLimit("frame count exceeds scanner limit")
+  }
+  if max_total_bytes < 0 || max_total_bytes > 268_435_456 {
+    raise InvalidConfiguration("scanner byte budget must be <= 256 MiB")
   }
   let valid : Array[ShardEnvelope] = []
   let issues : Array[FrameIssue] = []
+  let mut used_bytes = 0
   for position = 0; position < inputs.length(); position = position + 1 {
+    if inputs[position].length() > max_total_bytes - used_bytes {
+      raise ResourceLimit("input frames exceed scanner byte budget")
+    }
+    used_bytes = used_bytes + inputs[position].length()
     let parsed = try ShardEnvelope::from_bytes(
       inputs[position],
       max_encoded_bytes~,
