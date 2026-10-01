@@ -164,6 +164,17 @@ pub fn Codec::reconstruct(
   self : Codec,
   shards : Array[Bytes?],
 ) -> Array[Bytes] raise ErasureError {
+  self.reconstruct_with_decoder(shards, None)
+}
+
+///|
+/// Internal entry point that lets a caller reuse an inverse for a previously
+/// seen erasure pattern. Only RecoverySession supplies a precomputed matrix.
+fn Codec::reconstruct_with_decoder(
+  self : Codec,
+  shards : Array[Bytes?],
+  supplied_decoder : Matrix?,
+) -> Array[Bytes] raise ErasureError {
   if shards.length() != self.total_count() {
     raise InvalidShardCount(expected=self.total_count(), actual=shards.length())
   }
@@ -208,7 +219,10 @@ pub fn Codec::reconstruct(
       }
     }
   } else {
-    let decoder = self.generator.selected_rows(selected_indices).inverse(self.field)
+    let decoder = match supplied_decoder {
+      Some(value) => value
+      None => self.generator.selected_rows(selected_indices).inverse(self.field)
+    }
     for row = 0; row < self.data_count; row = row + 1 {
       match shards[row] {
         Some(shard) => data.push(copy_shard(shard))

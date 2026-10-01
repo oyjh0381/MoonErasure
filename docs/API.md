@@ -8,6 +8,8 @@ Construct `Codec::new(k, m, max_encoded_bytes?)`. The budget covers `k + m` shar
 
 For a known erasure, construct an array of exactly `k + m` options, with `None` at each missing slot, then call `reconstruct`. At least `k` shards are required. Every additional supplied shard is checked against the recovered codeword. `plan(present_flags)` reports selected inputs, missing data/parity indices and shortage before decoding. Raw shards have no integrity proof; use frames when input can be damaged.
 
+For repeated stripe-loss patterns, construct `RecoverySession::new(codec, max_patterns?)` and call its `reconstruct` method. It retains up to 64 selected-row inverse matrices (16 by default), with FIFO eviction. `cache_hits`, `cache_misses` and `cache_size` expose usage. A session is mutable and belongs to one caller; use separate sessions for concurrent workers. It still validates all supplied shard bytes through the normal reconstruction path. Cache benefit depends on repeated erasure patterns; one-off small stripes may not benefit.
+
 ## Frame and stripe
 
 `encode_stripe(codec, payload, set_id, stripe_index)` splits a nonempty payload into `k` equal zero-padded data shards, appends parity, and wraps each shard in a `ShardEnvelope`. The envelope carries the set and stripe identity, `k`, `m`, shard index, original length, and CRC-32C. Save `to_bytes()` on independent storage domains. Parse with `ShardEnvelope::from_bytes` and a suitable encoded-byte budget. The parser rejects unexpected version, dimensions, noncanonical lengths, reserved fields, or checksum mismatch.
