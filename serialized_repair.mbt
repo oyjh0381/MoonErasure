@@ -12,7 +12,9 @@ pub fn ScannedObjectRepair::repair(self : ScannedObjectRepair) -> ObjectRepair {
 }
 
 ///|
-pub fn ScannedObjectRepair::issues(self : ScannedObjectRepair) -> Array[FrameIssue] {
+pub fn ScannedObjectRepair::issues(
+  self : ScannedObjectRepair,
+) -> Array[FrameIssue] {
   let copy : Array[FrameIssue] = []
   for issue in self.issues {
     copy.push(issue)
@@ -39,5 +41,5 @@ pub fn repair_serialized_object(
     max_total_bytes~,
   )
   let repair = repair_object(manifest, scan.valid(), max_encoded_bytes~)
-  { repair, issues: scan.issues() }
+  { repair, issues: scan.issues(), }
 }

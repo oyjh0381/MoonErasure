@@ -24,13 +24,7 @@ pub fn ObjectEncoder::new(
     total_length,
     max_object_bytes~,
   )
-  {
-    codec,
-    manifest,
-    pending: [],
-    accepted_bytes: 0,
-    emitted_stripes: 0,
-  }
+  { codec, manifest, pending: [], accepted_bytes: 0, emitted_stripes: 0, }
 }
 
 ///|
@@ -88,7 +82,9 @@ pub fn ObjectEncoder::push(
 ///|
 /// Confirm the stream ended exactly at the declared length and every stripe
 /// was emitted. Empty objects finish without emitting frames.
-pub fn ObjectEncoder::finish(self : ObjectEncoder) -> Manifest raise ErasureError {
+pub fn ObjectEncoder::finish(
+  self : ObjectEncoder,
+) -> Manifest raise ErasureError {
   if self.accepted_bytes != self.manifest.total_length() ||
     self.emitted_stripes != self.manifest.stripe_count() ||
     self.pending.length() != 0 {

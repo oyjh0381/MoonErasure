@@ -72,7 +72,10 @@ pub fn RecoverySession::reconstruct(
   shards : Array[Bytes?],
 ) -> Array[Bytes] raise ErasureError {
   if shards.length() != self.codec.total_count() {
-    raise InvalidShardCount(expected=self.codec.total_count(), actual=shards.length())
+    raise InvalidShardCount(
+      expected=self.codec.total_count(),
+      actual=shards.length(),
+    )
   }
   let flags : Array[Bool] = []
   for shard in shards {
@@ -85,15 +88,20 @@ pub fn RecoverySession::reconstruct(
   let selected = plan.selected_indices()
   for entry in self.entries {
     if same_indices(entry.selected_indices, selected) {
-      let result = self.codec.reconstruct_with_decoder(shards, Some(entry.inverse))
+      let result = self.codec.reconstruct_with_decoder(
+        shards,
+        Some(entry.inverse),
+      )
       self.hits = self.hits + 1
       return result
     }
   }
-  let inverse = self.codec.generator.selected_rows(selected).inverse(self.codec.field)
+  let inverse = self.codec.generator
+    .selected_rows(selected)
+    .inverse(self.codec.field)
   let result = self.codec.reconstruct_with_decoder(shards, Some(inverse))
   self.misses = self.misses + 1
-  let entry = { selected_indices: selected, inverse }
+  let entry = { selected_indices: selected, inverse, }
   if self.entries.length() < self.capacity {
     self.entries.push(entry)
   } else {

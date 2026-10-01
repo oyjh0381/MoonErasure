@@ -17,9 +17,8 @@ fn main raise {
       let packet = frame.to_bytes()
       if frame.shard_index() == 5 {
         let damaged = packet.to_array()
-        damaged[damaged.length() - 1] = (
-          damaged[damaged.length() - 1].to_int() ^ 1
-        ).to_byte()
+        damaged[damaged.length() - 1] = (damaged[damaged.length() - 1].to_int() ^
+        1).to_byte()
         received.push(Bytes::from_array(damaged))
       } else {
         received.push(packet)
@@ -29,6 +28,8 @@ fn main raise {
   let result = try! @lib.recover_serialized_object(object.manifest(), received)
   assert_eq(result.recovery().payload(), original)
   println("rejected damaged packets: " + result.issues().length().to_string())
-  println("recovered bytes: " + result.recovery().payload().length().to_string())
+  println(
+    "recovered bytes: " + result.recovery().payload().length().to_string(),
+  )
   println("packet transfer recovery: ok")
 }

@@ -73,12 +73,11 @@ pub fn scan_frames(
       raise ResourceLimit("input frames exceed scanner byte budget")
     }
     used_bytes = used_bytes + inputs[position].length()
-    let parsed = try ShardEnvelope::from_bytes(
-      inputs[position],
-      max_encoded_bytes~,
-    ) catch {
+    let parsed = try
+      ShardEnvelope::from_bytes(inputs[position], max_encoded_bytes~)
+    catch {
       error => {
-        issues.push({ source_position: position, code: error.code() })
+        issues.push({ source_position: position, code: error.code(), })
         None
       }
     } noraise {
@@ -89,7 +88,7 @@ pub fn scan_frames(
       None => ()
     }
   }
-  { valid, issues }
+  { valid, issues, }
 }
 
 ///|
@@ -128,5 +127,5 @@ pub fn recover_serialized_stripe(
     max_encoded_bytes=codec.max_encoded_bytes,
   )
   let recovery = recover_stripe(codec, scan.valid(), set_id, stripe_index)
-  { recovery, issues: scan.issues() }
+  { recovery, issues: scan.issues(), }
 }

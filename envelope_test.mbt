@@ -2,12 +2,7 @@
 test "envelope roundtrip preserves metadata and data" {
   let codec = try! @moonerasure.Codec::new(3, 2)
   let envelope = try! @moonerasure.ShardEnvelope::new(
-    codec,
-    42,
-    7,
-    4,
-    8,
-    b"abc",
+    codec, 42, 7, 4, 8, b"abc",
   )
   let decoded = try! @moonerasure.ShardEnvelope::from_bytes(envelope.to_bytes())
   assert_eq(decoded.set_id(), 42)
@@ -25,7 +20,9 @@ test "envelope rejects damaged payload" {
   let envelope = try! @moonerasure.ShardEnvelope::new(codec, 1, 0, 0, 4, b"ab")
   let bytes = envelope.to_bytes().to_array()
   bytes[32] = b'x'
-  let rejected = try @moonerasure.ShardEnvelope::from_bytes(Bytes::from_array(bytes)) catch {
+  let rejected = try
+    @moonerasure.ShardEnvelope::from_bytes(Bytes::from_array(bytes))
+  catch {
     @moonerasure.ChecksumMismatch(_) => true
     _ => false
   } noraise {

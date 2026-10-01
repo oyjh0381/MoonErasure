@@ -12,7 +12,7 @@ fn Matrix::zero(rows : Int, cols : Int) -> Matrix {
   for row = 0; row < rows; row = row + 1 {
     cells.push(Array::make(cols, 0))
   }
-  { rows, cols, cells }
+  { rows, cols, cells, }
 }
 
 ///|

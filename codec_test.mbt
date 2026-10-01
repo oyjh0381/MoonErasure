@@ -40,7 +40,7 @@ test "every sufficient subset reconstructs each small codeword" {
         )
       }
       let encoded = try! codec.encode_all(data)
-      for mask = 0; mask < (1 << codec.total_count()); mask = mask + 1 {
+      for mask = 0; mask < 1 << codec.total_count(); mask = mask + 1 {
         let present : Array[Bytes?] = []
         let mut available = 0
         for index = 0; index < codec.total_count(); index = index + 1 {
@@ -68,7 +68,9 @@ test "invalid configuration and mismatched lengths are rejected" {
     _ => false
   }
   assert_true(bad_config)
-  let overflow_config = try @moonerasure.Codec::new(2147483647, 2147483647) catch {
+  let overflow_config = try
+    @moonerasure.Codec::new(2147483647, 2147483647)
+  catch {
     @moonerasure.InvalidConfiguration(_) => true
     _ => false
   } noraise {

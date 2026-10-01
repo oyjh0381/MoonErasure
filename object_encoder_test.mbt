@@ -22,13 +22,18 @@ test "incremental encoder agrees with whole-object encoding" {
       if end > payload.length() {
         end = payload.length()
       }
-      let completed = try! encoder.push(Bytes::from_array(payload[offset:end].to_array()))
+      let completed = try! encoder.push(
+        Bytes::from_array(payload[offset:end].to_array()),
+      )
       for frame in completed {
         frames.push(frame)
       }
       offset = end
     }
-    assert_eq((try! encoder.finish()).to_bytes(), expected.manifest().to_bytes())
+    assert_eq(
+      (try! encoder.finish()).to_bytes(),
+      expected.manifest().to_bytes(),
+    )
     assert_eq(frames.length(), expected.frame_count())
     let reference = expected.frames()
     for index = 0; index < frames.length(); index = index + 1 {

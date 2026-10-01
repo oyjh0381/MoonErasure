@@ -15,13 +15,20 @@ fn validated_max_shard_bytes(
   parity_count : Int,
   max_encoded_bytes : Int,
 ) -> Int raise ErasureError {
-  if data_count < 1 || data_count > 255 || parity_count < 1 ||
-    parity_count > 255 || data_count > 256 - parity_count {
-    raise InvalidConfiguration("require 1..255 data/parity shards, total <= 256")
+  if data_count < 1 ||
+    data_count > 255 ||
+    parity_count < 1 ||
+    parity_count > 255 ||
+    data_count > 256 - parity_count {
+    raise InvalidConfiguration(
+      "require 1..255 data/parity shards, total <= 256",
+    )
   }
   if max_encoded_bytes < data_count + parity_count ||
     max_encoded_bytes > 268_435_456 {
-    raise InvalidConfiguration("encoded byte budget must fit one byte per shard and be <= 256 MiB")
+    raise InvalidConfiguration(
+      "encoded byte budget must fit one byte per shard and be <= 256 MiB",
+    )
   }
   max_encoded_bytes / (data_count + parity_count)
 }
@@ -34,8 +41,12 @@ pub fn Codec::new(
 ) -> Codec raise ErasureError {
   ignore(validated_max_shard_bytes(data_count, parity_count, max_encoded_bytes))
   let field = Field::new()
-  let generator = systematic_matrix(data_count, data_count + parity_count, field)
-  { data_count, parity_count, max_encoded_bytes, generator, field }
+  let generator = systematic_matrix(
+    data_count,
+    data_count + parity_count,
+    field,
+  )
+  { data_count, parity_count, max_encoded_bytes, generator, field, }
 }
 
 ///|
@@ -69,7 +80,10 @@ fn Codec::check_length(self : Codec, length : Int) -> Unit raise ErasureError {
 }
 
 ///|
-fn Codec::check_data(self : Codec, data : Array[Bytes]) -> Int raise ErasureError {
+fn Codec::check_data(
+  self : Codec,
+  data : Array[Bytes],
+) -> Int raise ErasureError {
   if data.length() != self.data_count {
     raise InvalidShardCount(expected=self.data_count, actual=data.length())
   }
@@ -78,7 +92,7 @@ fn Codec::check_data(self : Codec, data : Array[Bytes]) -> Int raise ErasureErro
   for index = 1; index < data.length(); index = index + 1 {
     if data[index].length() != length {
       raise InvalidShardLength(
-        index=index,
+        index~,
         expected=length,
         actual=data[index].length(),
       )
@@ -94,7 +108,10 @@ fn copy_shard(source : Bytes) -> Bytes {
 
 ///|
 /// Compute parity without changing the caller's data shards.
-pub fn Codec::encode(self : Codec, data : Array[Bytes]) -> Array[Bytes] raise ErasureError {
+pub fn Codec::encode(
+  self : Codec,
+  data : Array[Bytes],
+) -> Array[Bytes] raise ErasureError {
   let length = self.check_data(data)
   let parity : Array[Bytes] = []
   for row = self.data_count; row < self.total_count(); row = row + 1 {
@@ -104,10 +121,8 @@ pub fn Codec::encode(self : Codec, data : Array[Bytes]) -> Array[Bytes] raise Er
       if coefficient != 0 {
         let source = data[column]
         for position = 0; position < length; position = position + 1 {
-          result[position] = (
-            result[position].to_int() ^
-            self.field.multiply(coefficient, source[position].to_int())
-          ).to_byte()
+          result[position] = (result[position].to_int() ^
+          self.field.multiply(coefficient, source[position].to_int())).to_byte()
         }
       }
     }
@@ -188,7 +203,7 @@ fn Codec::reconstruct_with_decoder(
           self.check_length(length)
         } else if shard.length() != length {
           raise InvalidShardLength(
-            index=index,
+            index~,
             expected=length,
             actual=shard.length(),
           )
@@ -207,7 +222,11 @@ fn Codec::reconstruct_with_decoder(
   for index in selected_indices {
     match shards[index] {
       Some(shard) => selected_shards.push(shard)
-      None => raise NotEnoughShards(required=self.data_count, available=plan.available())
+      None =>
+        raise NotEnoughShards(
+          required=self.data_count,
+          available=plan.available(),
+        )
     }
   }
   let data : Array[Bytes] = []
@@ -215,7 +234,11 @@ fn Codec::reconstruct_with_decoder(
     for index = 0; index < self.data_count; index = index + 1 {
       match shards[index] {
         Some(shard) => data.push(copy_shard(shard))
-        None => raise NotEnoughShards(required=self.data_count, available=plan.available())
+        None =>
+          raise NotEnoughShards(
+            required=self.data_count,
+            available=plan.available(),
+          )
       }
     }
   } else {
@@ -233,10 +256,8 @@ fn Codec::reconstruct_with_decoder(
             if coefficient != 0 {
               let source = selected_shards[column]
               for position = 0; position < length; position = position + 1 {
-                result[position] = (
-                  result[position].to_int() ^
-                  self.field.multiply(coefficient, source[position].to_int())
-                ).to_byte()
+                result[position] = (result[position].to_int() ^
+                self.field.multiply(coefficient, source[position].to_int())).to_byte()
               }
             }
           }

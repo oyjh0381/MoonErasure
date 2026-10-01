@@ -21,7 +21,10 @@ test "raw frame health distinguishes recoverable damage and fatal shortage" {
       inputs.push(frame.to_bytes())
     }
   }
-  let result = try! @moonerasure.inspect_serialized_object(object.manifest(), inputs)
+  let result = try! @moonerasure.inspect_serialized_object(
+    object.manifest(),
+    inputs,
+  )
   assert_eq(result.issues().length(), 1)
   assert_eq(result.health().repairable_count(), 1)
   assert_eq(result.health().unrecoverable_count(), 1)
@@ -37,7 +40,10 @@ test "raw frame health reports invalid duplicate slot separately" {
   inputs.push(frames[0].to_bytes())
   inputs.push(frames[1].to_bytes())
   inputs.push(frames[0].to_bytes())
-  let result = try! @moonerasure.inspect_serialized_object(object.manifest(), inputs)
+  let result = try! @moonerasure.inspect_serialized_object(
+    object.manifest(),
+    inputs,
+  )
   assert_eq(result.health().invalid_count(), 1)
   assert_eq(result.issues().length(), 0)
 }

@@ -7,7 +7,8 @@ test "object round trips across empty partial and exact stripes" {
         for total_length in [0, 1, 2, 7, 8, 9, 16, 17, 31] {
           let payload = Array::make(total_length, b'\x00')
           for index = 0; index < total_length; index = index + 1 {
-            payload[index] = ((index * 19 + data_count * 43 + parity_count) % 256).to_byte()
+            payload[index] = ((index * 19 + data_count * 43 + parity_count) %
+            256).to_byte()
           }
           let source = Bytes::from_array(payload)
           let object = try! @moonerasure.encode_object(
@@ -18,8 +19,8 @@ test "object round trips across empty partial and exact stripes" {
           )
           let retained : Array[@moonerasure.ShardEnvelope] = []
           for frame in object.frames() {
-            if frame.shard_index() != frame.stripe_index() %
-              (data_count + parity_count) {
+            if frame.shard_index() !=
+              frame.stripe_index() % (data_count + parity_count) {
               retained.push(frame)
             }
           }
@@ -54,7 +55,7 @@ test "every valid byte range matches direct slice after frame loss" {
   )
   let retained : Array[@moonerasure.ShardEnvelope] = []
   for frame in object.frames() {
-    if frame.shard_index() != (frame.stripe_index() % 2) {
+    if frame.shard_index() != frame.stripe_index() % 2 {
       retained.push(frame)
     }
   }

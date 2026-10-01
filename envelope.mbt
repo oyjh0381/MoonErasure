@@ -28,7 +28,8 @@ pub fn ShardEnvelope::new(
     raise InvalidIndex(shard_index)
   }
   codec.check_length(payload.length())
-  if original_length < 1 || original_length > codec.data_count() * payload.length() {
+  if original_length < 1 ||
+    original_length > codec.data_count() * payload.length() {
     raise InvalidEnvelope("original length must fit in data shards")
   }
   let expected_length = (original_length - 1) / codec.data_count() + 1
@@ -145,7 +146,9 @@ pub fn ShardEnvelope::from_bytes(
   if input.length() < 33 {
     raise InvalidEnvelope("frame is shorter than header plus one payload byte")
   }
-  if input[0] != b'M' || input[1] != b'E' || input[2] != b'R' ||
+  if input[0] != b'M' ||
+    input[1] != b'E' ||
+    input[2] != b'R' ||
     input[3] != b'S' {
     raise InvalidEnvelope("bad magic")
   }
@@ -153,9 +156,10 @@ pub fn ShardEnvelope::from_bytes(
   if version != 1 {
     raise UnsupportedVersion(version)
   }
-  if input[5] != b'\x00' || read_u16(input, 6) != 32 ||
-    read_u16(input, 22) != 0 {
-    raise InvalidEnvelope("nonzero flags, reserved bytes or wrong header length")
+  if input[5] != b'\x00' || read_u16(input, 6) != 32 || read_u16(input, 22) != 0 {
+    raise InvalidEnvelope(
+      "nonzero flags, reserved bytes or wrong header length",
+    )
   }
   let set_id = read_bounded_int(input, 8)
   let stripe_index = read_bounded_int(input, 12)
@@ -164,9 +168,7 @@ pub fn ShardEnvelope::from_bytes(
   let parity_count = read_u16(input, 20)
   let original_length = read_bounded_int(input, 24)
   let max_shard_bytes = validated_max_shard_bytes(
-    data_count,
-    parity_count,
-    max_encoded_bytes,
+    data_count, parity_count, max_encoded_bytes,
   )
   if shard_index >= data_count + parity_count {
     raise InvalidIndex(shard_index)

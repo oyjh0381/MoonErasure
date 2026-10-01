@@ -12,7 +12,9 @@ pub fn ScannedRangeRecovery::payload(self : ScannedRangeRecovery) -> Bytes {
 }
 
 ///|
-pub fn ScannedRangeRecovery::issues(self : ScannedRangeRecovery) -> Array[FrameIssue] {
+pub fn ScannedRangeRecovery::issues(
+  self : ScannedRangeRecovery,
+) -> Array[FrameIssue] {
   let copy : Array[FrameIssue] = []
   for issue in self.issues {
     copy.push(issue)
@@ -32,7 +34,9 @@ pub fn recover_serialized_range(
   max_encoded_bytes? : Int = 16_777_216,
   max_total_bytes? : Int = 134_217_728,
 ) -> ScannedRangeRecovery raise ErasureError {
-  if start < 0 || length < 0 || start > manifest.total_length() ||
+  if start < 0 ||
+    length < 0 ||
+    start > manifest.total_length() ||
     length > manifest.total_length() - start {
     raise InvalidRange
   }
@@ -51,5 +55,5 @@ pub fn recover_serialized_range(
     length,
     max_encoded_bytes~,
   )
-  { payload, issues: scan.issues() }
+  { payload, issues: scan.issues(), }
 }

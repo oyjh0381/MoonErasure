@@ -33,7 +33,9 @@ test "bundle import rejects truncation and trailing data" {
   assert_true(rejected_truncation)
   let longer = encoded.to_array()
   longer.push(b'!')
-  let rejected_tail = try @moonerasure.import_bundle(Bytes::from_array(longer)) catch {
+  let rejected_tail = try
+    @moonerasure.import_bundle(Bytes::from_array(longer))
+  catch {
     @moonerasure.InvalidEnvelope(_) => true
     _ => false
   } noraise {

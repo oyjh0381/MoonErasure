@@ -22,7 +22,7 @@ fn Field::new() -> Field {
   for i = 255; i < 512; i = i + 1 {
     exp[i] = exp[i - 255]
   }
-  { exp, log }
+  { exp, log, }
 }
 
 ///|

@@ -84,7 +84,8 @@ pub fn inspect_stripe(
   let mut present_count = 0
   for frame in frames {
     let index = frame.shard_index()
-    if frame.set_id() != set_id || frame.stripe_index() != stripe_index ||
+    if frame.set_id() != set_id ||
+      frame.stripe_index() != stripe_index ||
       frame.data_count() != codec.data_count() ||
       frame.parity_count() != codec.parity_count() {
       reason_code = Some("ERASURE_ENVELOPE")
@@ -104,7 +105,8 @@ pub fn inspect_stripe(
     }
   }
   match reason_code {
-    Some(code) => return invalid_health(stripe_index, present_count, missing_indices, code)
+    Some(code) =>
+      return invalid_health(stripe_index, present_count, missing_indices, code)
     None => ()
   }
   if present_count < codec.data_count() {
@@ -122,14 +124,20 @@ pub fn inspect_stripe(
     _ => None
   }
   match checked {
-    Some(code) => invalid_health(stripe_index, present_count, missing_indices, code)
-    None => {
-      stripe_index,
-      status: if missing_indices.length() == 0 { Healthy } else { Repairable },
-      present_count,
-      missing_indices,
-      reason_code: None,
-    }
+    Some(code) =>
+      invalid_health(stripe_index, present_count, missing_indices, code)
+    None =>
+      {
+        stripe_index,
+        status: if missing_indices.length() == 0 {
+          Healthy
+        } else {
+          Repairable
+        },
+        present_count,
+        missing_indices,
+        reason_code: None,
+      }
   }
 }
 
@@ -189,7 +197,8 @@ pub fn inspect_object(
     manifest.parity_count(),
     max_encoded_bytes~,
   )
-  if manifest.stripe_payload_limit() > codec.data_count() * codec.max_shard_bytes() {
+  if manifest.stripe_payload_limit() >
+    codec.data_count() * codec.max_shard_bytes() {
     raise ResourceLimit("codec budget cannot hold manifest stripe")
   }
   if frames.length() > manifest.stripe_count() * codec.total_count() {
@@ -221,5 +230,11 @@ pub fn inspect_object(
     }
     stripes.push(report)
   }
-  { stripes, healthy_count, repairable_count, unrecoverable_count, invalid_count }
+  {
+    stripes,
+    healthy_count,
+    repairable_count,
+    unrecoverable_count,
+    invalid_count,
+  }
 }

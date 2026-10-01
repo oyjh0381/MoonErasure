@@ -23,7 +23,10 @@ test "all valid object ranges agree with original bytes" {
         start,
         length,
       )
-      assert_eq(result, Bytes::from_array(payload[start:start + length].to_array()))
+      assert_eq(
+        result,
+        Bytes::from_array(payload[start:start + length].to_array()),
+      )
     }
   }
 }

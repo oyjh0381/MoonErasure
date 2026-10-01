@@ -1,14 +1,16 @@
 ///|
 test "every single-byte shard frame mutation is rejected" {
   let codec = try! @moonerasure.Codec::new(3, 2)
-  let frames = try! @moonerasure.encode_stripe(codec, b"audit the entire wire frame", 11, 3)
+  let frames = try! @moonerasure.encode_stripe(
+    codec, b"audit the entire wire frame", 11, 3,
+  )
   let original = frames[4].to_bytes()
   for index = 0; index < original.length(); index = index + 1 {
     let changed = original.to_array()
     changed[index] = (changed[index].to_int() ^ 1).to_byte()
-    let rejected = try @moonerasure.ShardEnvelope::from_bytes(
-      Bytes::from_array(changed),
-    ) catch {
+    let rejected = try
+      @moonerasure.ShardEnvelope::from_bytes(Bytes::from_array(changed))
+    catch {
       _ => true
     } noraise {
       _ => false
@@ -25,9 +27,9 @@ test "every single-byte manifest mutation is rejected" {
   for index = 0; index < original.length(); index = index + 1 {
     let changed = original.to_array()
     changed[index] = (changed[index].to_int() ^ 1).to_byte()
-    let rejected = try @moonerasure.Manifest::from_bytes(
-      Bytes::from_array(changed),
-    ) catch {
+    let rejected = try
+      @moonerasure.Manifest::from_bytes(Bytes::from_array(changed))
+    catch {
       _ => true
     } noraise {
       _ => false
@@ -49,9 +51,9 @@ test "single-byte bundle mutations are rejected" {
   for index = 0; index < original.length(); index = index + 1 {
     let changed = original.to_array()
     changed[index] = (changed[index].to_int() ^ 1).to_byte()
-    let rejected = try @moonerasure.import_bundle(
-      Bytes::from_array(changed),
-    ) catch {
+    let rejected = try
+      @moonerasure.import_bundle(Bytes::from_array(changed))
+    catch {
       _ => true
     } noraise {
       _ => false

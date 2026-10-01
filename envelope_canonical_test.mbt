@@ -1,14 +1,9 @@
 ///|
 test "envelope constructor requires canonical ceil division shard length" {
   let codec = try! @moonerasure.Codec::new(3, 2)
-  let code = try @moonerasure.ShardEnvelope::new(
-    codec,
-    1,
-    0,
-    0,
-    4,
-    b"abc",
-  ) catch {
+  let code = try
+    @moonerasure.ShardEnvelope::new(codec, 1, 0, 0, 4, b"abc")
+  catch {
     error => error.code()
   } noraise {
     _ => "unexpected success"
@@ -34,7 +29,9 @@ test "parser rejects noncanonical padded frame even with valid CRC" {
   for shift = 0; shift < 4; shift = shift + 1 {
     bytes[28 + shift] = ((checksum >> (shift * 8)) & 0xffU).to_byte()
   }
-  let code = try @moonerasure.ShardEnvelope::from_bytes(Bytes::from_array(bytes)) catch {
+  let code = try
+    @moonerasure.ShardEnvelope::from_bytes(Bytes::from_array(bytes))
+  catch {
     error => error.code()
   } noraise {
     _ => "unexpected success"

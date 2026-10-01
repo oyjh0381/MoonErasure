@@ -9,7 +9,9 @@ pub fn recover_object_range(
   length : Int,
   max_encoded_bytes? : Int = 16_777_216,
 ) -> Bytes raise ErasureError {
-  if start < 0 || length < 0 || start > manifest.total_length() ||
+  if start < 0 ||
+    length < 0 ||
+    start > manifest.total_length() ||
     length > manifest.total_length() - start {
     raise InvalidRange
   }
@@ -21,7 +23,8 @@ pub fn recover_object_range(
     manifest.parity_count(),
     max_encoded_bytes~,
   )
-  if manifest.stripe_payload_limit() > codec.data_count() * codec.max_shard_bytes() {
+  if manifest.stripe_payload_limit() >
+    codec.data_count() * codec.max_shard_bytes() {
     raise ResourceLimit("codec budget cannot hold manifest stripe")
   }
   let first = start / manifest.stripe_payload_limit()
@@ -43,7 +46,9 @@ pub fn recover_object_range(
     }
   }
   let output = Array::make(length, b'\x00')
-  for stripe_index = first; stripe_index <= last; stripe_index = stripe_index + 1 {
+  for stripe_index = first
+      stripe_index <= last
+      stripe_index = stripe_index + 1 {
     let recovered = recover_stripe(
       codec,
       groups[stripe_index - first],

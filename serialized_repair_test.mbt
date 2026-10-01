@@ -21,7 +21,10 @@ test "serialized repair replaces lost and checksum-failed frames" {
       inputs.push(frame.to_bytes())
     }
   }
-  let scanned = try! @moonerasure.repair_serialized_object(object.manifest(), inputs)
+  let scanned = try! @moonerasure.repair_serialized_object(
+    object.manifest(),
+    inputs,
+  )
   assert_eq(scanned.issues().length(), object.manifest().stripe_count())
   assert_eq(scanned.repair().replacement_count(), expected_missing.length())
   let replacement = scanned.repair().replacements()
@@ -40,7 +43,9 @@ test "serialized repair refuses damage exceeding parity capacity" {
       inputs.push(frame.to_bytes())
     }
   }
-  let code = try @moonerasure.repair_serialized_object(object.manifest(), inputs) catch {
+  let code = try
+    @moonerasure.repair_serialized_object(object.manifest(), inputs)
+  catch {
     error => error.code()
   } noraise {
     _ => "unexpected success"

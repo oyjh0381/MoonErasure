@@ -23,7 +23,9 @@ pub fn BundleStream::new(
   max_encoded_bytes? : Int = 16_777_216,
 ) -> BundleStream raise ErasureError {
   if max_input_bytes < 56 || max_input_bytes > 268_435_456 {
-    raise InvalidConfiguration("stream byte budget must fit headers and be <= 256 MiB")
+    raise InvalidConfiguration(
+      "stream byte budget must fit headers and be <= 256 MiB",
+    )
   }
   if max_object_bytes < 0 || max_object_bytes > 268_435_456 {
     raise InvalidConfiguration("stream object budget must be <= 256 MiB")
@@ -84,7 +86,9 @@ fn BundleStream::compact(self : BundleStream) -> Unit {
 ///|
 fn BundleStream::accept_header(self : BundleStream) -> Unit raise ErasureError {
   let header = self.consume_prefix(24)
-  if header[0] != b'M' || header[1] != b'E' || header[2] != b'R' ||
+  if header[0] != b'M' ||
+    header[1] != b'E' ||
+    header[2] != b'R' ||
     header[3] != b'B' {
     raise InvalidEnvelope("bad streaming bundle magic")
   }
@@ -92,8 +96,10 @@ fn BundleStream::accept_header(self : BundleStream) -> Unit raise ErasureError {
   if version != 1 {
     raise UnsupportedVersion(version)
   }
-  if header[5] != b'\x00' || read_u16(header, 6) != 24 ||
-    read_u32(header, 8) != 32U || read_u32(header, 16) != 0U {
+  if header[5] != b'\x00' ||
+    read_u16(header, 6) != 24 ||
+    read_u32(header, 8) != 32U ||
+    read_u32(header, 16) != 0U {
     raise InvalidEnvelope("invalid streaming bundle header")
   }
   if crc32c(Bytes::from_array(header[0:20].to_array())) != read_u32(header, 20) {
@@ -104,7 +110,9 @@ fn BundleStream::accept_header(self : BundleStream) -> Unit raise ErasureError {
 }
 
 ///|
-fn BundleStream::accept_manifest(self : BundleStream) -> Unit raise ErasureError {
+fn BundleStream::accept_manifest(
+  self : BundleStream,
+) -> Unit raise ErasureError {
   let encoded = self.consume_prefix(32)
   let manifest = Manifest::from_bytes(
     encoded,
@@ -137,7 +145,9 @@ fn BundleStream::accept_frame(
   if frame.set_id() != manifest.set_id() ||
     frame.data_count() != manifest.data_count() ||
     frame.parity_count() != manifest.parity_count() {
-    raise InvalidEnvelope("stream frame identity or codec differs from manifest")
+    raise InvalidEnvelope(
+      "stream frame identity or codec differs from manifest",
+    )
   }
   let stripe_index = frame.stripe_index()
   if stripe_index < 0 || stripe_index >= manifest.stripe_count() {

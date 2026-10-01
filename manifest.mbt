@@ -20,9 +20,7 @@ fn checked_manifest(
   max_encoded_bytes : Int,
 ) -> Manifest raise ErasureError {
   let max_shard_bytes = validated_max_shard_bytes(
-    data_count,
-    parity_count,
-    max_encoded_bytes,
+    data_count, parity_count, max_encoded_bytes,
   )
   if set_id < 0 {
     raise InvalidManifest("set id must be nonnegative")
@@ -104,7 +102,10 @@ pub fn Manifest::stripe_payload_limit(self : Manifest) -> Int {
 }
 
 ///|
-pub fn Manifest::stripe_length(self : Manifest, index : Int) -> Int raise ErasureError {
+pub fn Manifest::stripe_length(
+  self : Manifest,
+  index : Int,
+) -> Int raise ErasureError {
   if index < 0 || index >= self.stripe_count {
     raise InvalidIndex(index)
   }
@@ -140,7 +141,9 @@ pub fn Manifest::from_bytes(
   if input.length() != 32 {
     raise InvalidManifest("manifest must be exactly 32 bytes")
   }
-  if input[0] != b'M' || input[1] != b'E' || input[2] != b'R' ||
+  if input[0] != b'M' ||
+    input[1] != b'E' ||
+    input[2] != b'R' ||
     input[3] != b'M' {
     raise InvalidManifest("bad manifest magic")
   }
@@ -162,12 +165,7 @@ pub fn Manifest::from_bytes(
   let stored_stripe_count = read_bounded_int(input, 20)
   let total_length = read_bounded_int(input, 24)
   let manifest = checked_manifest(
-    set_id,
-    data_count,
-    parity_count,
-    stripe_payload_limit,
-    total_length,
-    max_object_bytes,
+    set_id, data_count, parity_count, stripe_payload_limit, total_length, max_object_bytes,
     max_encoded_bytes,
   )
   if manifest.stripe_count != stored_stripe_count {

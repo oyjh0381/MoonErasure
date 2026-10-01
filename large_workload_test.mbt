@@ -47,7 +47,9 @@ test "large incremental stream keeps at most one stripe internally" {
     if end > payload.length() {
       end = payload.length()
     }
-    let emitted = try! encoder.push(Bytes::from_array(payload[offset:end].to_array()))
+    let emitted = try! encoder.push(
+      Bytes::from_array(payload[offset:end].to_array()),
+    )
     for frame in emitted {
       frames.push(frame)
     }

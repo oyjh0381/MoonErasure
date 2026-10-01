@@ -12,7 +12,9 @@ pub fn ScannedObjectHealth::health(self : ScannedObjectHealth) -> ObjectHealth {
 }
 
 ///|
-pub fn ScannedObjectHealth::issues(self : ScannedObjectHealth) -> Array[FrameIssue] {
+pub fn ScannedObjectHealth::issues(
+  self : ScannedObjectHealth,
+) -> Array[FrameIssue] {
   let copy : Array[FrameIssue] = []
   for issue in self.issues {
     copy.push(issue)
@@ -39,5 +41,5 @@ pub fn inspect_serialized_object(
     max_total_bytes~,
   )
   let health = inspect_object(manifest, scan.valid(), max_encoded_bytes~)
-  { health, issues: scan.issues() }
+  { health, issues: scan.issues(), }
 }

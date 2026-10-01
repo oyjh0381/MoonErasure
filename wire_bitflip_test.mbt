@@ -6,12 +6,10 @@ test "every single bit flip in one frame fails parsing" {
   for position = 0; position < wire.length(); position = position + 1 {
     for bit = 0; bit < 8; bit = bit + 1 {
       let damaged = wire.to_array()
-      damaged[position] = (
-        damaged[position].to_int() ^ (1 << bit)
-      ).to_byte()
-      let accepted = try @moonerasure.ShardEnvelope::from_bytes(
-        Bytes::from_array(damaged),
-      ) catch {
+      damaged[position] = (damaged[position].to_int() ^ (1 << bit)).to_byte()
+      let accepted = try
+        @moonerasure.ShardEnvelope::from_bytes(Bytes::from_array(damaged))
+      catch {
         _ => false
       } noraise {
         _ => true
@@ -29,12 +27,10 @@ test "every single bit flip in a manifest fails parsing" {
   for position = 0; position < wire.length(); position = position + 1 {
     for bit = 0; bit < 8; bit = bit + 1 {
       let damaged = wire.to_array()
-      damaged[position] = (
-        damaged[position].to_int() ^ (1 << bit)
-      ).to_byte()
-      let accepted = try @moonerasure.Manifest::from_bytes(
-        Bytes::from_array(damaged),
-      ) catch {
+      damaged[position] = (damaged[position].to_int() ^ (1 << bit)).to_byte()
+      let accepted = try
+        @moonerasure.Manifest::from_bytes(Bytes::from_array(damaged))
+      catch {
         _ => false
       } noraise {
         _ => true
@@ -57,9 +53,9 @@ test "bundle import rejects every single bit flip in small archive" {
   for position = 0; position < wire.length(); position = position + 1 {
     let damaged = wire.to_array()
     damaged[position] = (damaged[position].to_int() ^ 1).to_byte()
-    let accepted = try @moonerasure.import_bundle(
-      Bytes::from_array(damaged),
-    ) catch {
+    let accepted = try
+      @moonerasure.import_bundle(Bytes::from_array(damaged))
+    catch {
       _ => false
     } noraise {
       _ => true

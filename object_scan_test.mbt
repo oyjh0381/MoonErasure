@@ -34,10 +34,9 @@ test "serialized object recovers one damaged shard in each stripe" {
 test "scanner enforces aggregate byte budget before parsing" {
   let codec = try! @moonerasure.Codec::new(2, 1)
   let frame = (try! @moonerasure.encode_stripe(codec, b"abcd", 1, 0))[0].to_bytes()
-  let rejected = try @moonerasure.scan_frames(
-    [frame, frame],
-    max_total_bytes=frame.length(),
-  ) catch {
+  let rejected = try
+    @moonerasure.scan_frames([frame, frame], max_total_bytes=frame.length())
+  catch {
     @moonerasure.ResourceLimit(_) => true
     _ => false
   } noraise {

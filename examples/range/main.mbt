@@ -17,7 +17,8 @@ fn main raise {
   let fetched : Array[@lib.ShardEnvelope] = []
   for frame in object.frames() {
     if frame.stripe_index() >= first_stripe &&
-      frame.stripe_index() <= last_stripe && frame.shard_index() != 1 {
+      frame.stripe_index() <= last_stripe &&
+      frame.shard_index() != 1 {
       fetched.push(frame)
     }
   }

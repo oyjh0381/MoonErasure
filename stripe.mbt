@@ -54,7 +54,9 @@ pub fn encode_stripe(
     length = length + 1
   }
   let data : Array[Bytes] = []
-  for shard_index = 0; shard_index < codec.data_count(); shard_index = shard_index + 1 {
+  for shard_index = 0
+      shard_index < codec.data_count()
+      shard_index = shard_index + 1 {
     let bytes = Array::make(length, b'\x00')
     for offset = 0; offset < length; offset = offset + 1 {
       let position = shard_index * length + offset
@@ -121,7 +123,10 @@ pub fn recover_stripe(
     present[index] = Some(frame.payload())
   }
   if frames.length() < codec.data_count() {
-    raise NotEnoughShards(required=codec.data_count(), available=frames.length())
+    raise NotEnoughShards(
+      required=codec.data_count(),
+      available=frames.length(),
+    )
   }
   if original_length < 1 || original_length > codec.data_count() * shard_length {
     raise InvalidEnvelope("invalid stripe original length")
@@ -133,7 +138,9 @@ pub fn recover_stripe(
     }
   }
   let rebuilt = codec.reconstruct(present)
-  for position = original_length; position < codec.data_count() * shard_length; position = position + 1 {
+  for position = original_length
+      position < codec.data_count() * shard_length
+      position = position + 1 {
     if rebuilt[position / shard_length][position % shard_length] != b'\x00' {
       raise InvalidEnvelope("nonzero bytes in padded data tail")
     }

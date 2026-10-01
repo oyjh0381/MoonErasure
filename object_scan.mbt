@@ -6,12 +6,16 @@ pub struct ScannedObjectRecovery {
 }
 
 ///|
-pub fn ScannedObjectRecovery::recovery(self : ScannedObjectRecovery) -> ObjectRecovery {
+pub fn ScannedObjectRecovery::recovery(
+  self : ScannedObjectRecovery,
+) -> ObjectRecovery {
   self.recovery
 }
 
 ///|
-pub fn ScannedObjectRecovery::issues(self : ScannedObjectRecovery) -> Array[FrameIssue] {
+pub fn ScannedObjectRecovery::issues(
+  self : ScannedObjectRecovery,
+) -> Array[FrameIssue] {
   let copy : Array[FrameIssue] = []
   for issue in self.issues {
     copy.push(issue)
@@ -38,5 +42,5 @@ pub fn recover_serialized_object(
     max_total_bytes~,
   )
   let recovery = recover_object(manifest, scan.valid(), max_encoded_bytes~)
-  { recovery, issues: scan.issues() }
+  { recovery, issues: scan.issues(), }
 }

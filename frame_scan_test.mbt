@@ -1,7 +1,9 @@
 ///|
 test "two checksum failures become known erasures" {
   let codec = try! @moonerasure.Codec::new(3, 2)
-  let frames = try! @moonerasure.encode_stripe(codec, b"packet loss example", 6, 2)
+  let frames = try! @moonerasure.encode_stripe(
+    codec, b"packet loss example", 6, 2,
+  )
   let raw : Array[Bytes] = []
   for index = 0; index < frames.length(); index = index + 1 {
     let bytes = frames[index].to_bytes().to_array()

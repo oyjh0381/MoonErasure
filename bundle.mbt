@@ -7,7 +7,9 @@ pub fn export_bundle(
   max_output_bytes? : Int = 134_217_728,
 ) -> Bytes raise ErasureError {
   if max_output_bytes < 56 || max_output_bytes > 268_435_456 {
-    raise InvalidConfiguration("bundle byte budget must fit headers and be <= 256 MiB")
+    raise InvalidConfiguration(
+      "bundle byte budget must fit headers and be <= 256 MiB",
+    )
   }
   let manifest = object.manifest()
   let expected = manifest.stripe_count() *
@@ -57,7 +59,9 @@ pub fn import_bundle(
   if input.length() < 56 {
     raise InvalidEnvelope("bundle is shorter than both headers")
   }
-  if input[0] != b'M' || input[1] != b'E' || input[2] != b'R' ||
+  if input[0] != b'M' ||
+    input[1] != b'E' ||
+    input[2] != b'R' ||
     input[3] != b'B' {
     raise InvalidEnvelope("bad bundle magic")
   }
@@ -65,8 +69,10 @@ pub fn import_bundle(
   if version != 1 {
     raise UnsupportedVersion(version)
   }
-  if input[5] != b'\x00' || read_u16(input, 6) != 24 ||
-    read_u32(input, 8) != 32U || read_u32(input, 16) != 0U {
+  if input[5] != b'\x00' ||
+    read_u16(input, 6) != 24 ||
+    read_u32(input, 8) != 32U ||
+    read_u32(input, 16) != 0U {
     raise InvalidEnvelope("bundle header fields are invalid")
   }
   let expected_checksum = crc32c(Bytes::from_array(input[0:20].to_array()))
@@ -107,5 +113,5 @@ pub fn import_bundle(
     raise InvalidEnvelope("trailing bytes after final frame")
   }
   ignore(recover_object(manifest, frames, max_encoded_bytes~))
-  { manifest, frames }
+  { manifest, frames, }
 }

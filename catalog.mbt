@@ -11,11 +11,7 @@ pub struct FrameCatalog {
 pub fn FrameCatalog::new(manifest : Manifest) -> FrameCatalog {
   let total_slots = manifest.stripe_count() *
     (manifest.data_count() + manifest.parity_count())
-  {
-    manifest,
-    slots: Array::make(total_slots, None),
-    stored_count: 0,
-  }
+  { manifest, slots: Array::make(total_slots, None), stored_count: 0, }
 }
 
 ///|

@@ -26,7 +26,11 @@ pub fn RepairPlan::recoverable(self : RepairPlan) -> Bool {
 
 ///|
 pub fn RepairPlan::minimum_additional_shards(self : RepairPlan) -> Int {
-  if self.recoverable() { 0 } else { self.required - self.available }
+  if self.recoverable() {
+    0
+  } else {
+    self.required - self.available
+  }
 }
 
 ///|
@@ -69,7 +73,10 @@ pub fn Codec::plan(
   present : Array[Bool],
 ) -> RepairPlan raise ErasureError {
   if present.length() != self.total_count() {
-    raise InvalidShardCount(expected=self.total_count(), actual=present.length())
+    raise InvalidShardCount(
+      expected=self.total_count(),
+      actual=present.length(),
+    )
   }
   let selected_indices : Array[Int] = []
   let missing_data_indices : Array[Int] = []

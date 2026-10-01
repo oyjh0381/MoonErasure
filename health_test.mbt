@@ -28,7 +28,9 @@ test "health report separates healthy repairable and unrecoverable stripes" {
 test "health report rejects inconsistent otherwise sufficient frames" {
   let codec = try! @moonerasure.Codec::new(2, 1)
   let original = try! @moonerasure.encode_stripe(codec, b"abcd", 3, 0)
-  let conflicting = try! @moonerasure.ShardEnvelope::new(codec, 3, 0, 2, 4, b"zz")
+  let conflicting = try! @moonerasure.ShardEnvelope::new(
+    codec, 3, 0, 2, 4, b"zz",
+  )
   let report = @moonerasure.inspect_stripe(
     codec,
     [original[0], original[1], conflicting],

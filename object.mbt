@@ -69,7 +69,9 @@ pub fn encode_object(
   let frames : Array[ShardEnvelope] = []
   let mut offset = 0
   let mut output_bytes = 0
-  for stripe_index = 0; stripe_index < manifest.stripe_count(); stripe_index = stripe_index + 1 {
+  for stripe_index = 0
+      stripe_index < manifest.stripe_count()
+      stripe_index = stripe_index + 1 {
     let stripe_length = manifest.stripe_length(stripe_index)
     let mut shard_length = stripe_length / codec.data_count()
     if stripe_length % codec.data_count() != 0 {
@@ -80,14 +82,16 @@ pub fn encode_object(
       raise ResourceLimit("encoded object exceeds output byte budget")
     }
     output_bytes = output_bytes + frame_length * codec.total_count()
-    let chunk = Bytes::from_array(payload[offset:offset + stripe_length].to_array())
+    let chunk = Bytes::from_array(
+      payload[offset:offset + stripe_length].to_array(),
+    )
     let stripe = encode_stripe(codec, chunk, set_id, stripe_index)
     for frame in stripe {
       frames.push(frame)
     }
     offset = offset + stripe_length
   }
-  { manifest, frames }
+  { manifest, frames, }
 }
 
 ///|
@@ -103,7 +107,8 @@ pub fn recover_object(
     manifest.parity_count(),
     max_encoded_bytes~,
   )
-  if manifest.stripe_payload_limit() > codec.data_count() * codec.max_shard_bytes() {
+  if manifest.stripe_payload_limit() >
+    codec.data_count() * codec.max_shard_bytes() {
     raise ResourceLimit("codec budget cannot hold manifest stripe")
   }
   if frames.length() > manifest.stripe_count() * codec.total_count() {
@@ -136,7 +141,8 @@ pub fn recover_object(
       output[offset] = byte
       offset = offset + 1
     }
-    repaired_shard_count = repaired_shard_count + result.missing_indices().length()
+    repaired_shard_count = repaired_shard_count +
+      result.missing_indices().length()
   }
   {
     payload: Bytes::from_array(output),

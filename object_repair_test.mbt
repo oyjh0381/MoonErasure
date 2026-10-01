@@ -32,7 +32,10 @@ test "object repair generates only missing frames" {
 test "complete object needs no replacement" {
   let codec = try! @moonerasure.Codec::new(2, 1)
   let object = try! @moonerasure.encode_object(codec, b"complete", 42)
-  let repair = try! @moonerasure.repair_object(object.manifest(), object.frames())
+  let repair = try! @moonerasure.repair_object(
+    object.manifest(),
+    object.frames(),
+  )
   assert_eq(repair.replacement_count(), 0)
   assert_eq(repair.repaired_stripes(), 0)
 }

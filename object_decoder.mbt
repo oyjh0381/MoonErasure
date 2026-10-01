@@ -20,16 +20,11 @@ pub fn ObjectDecoder::new(
     manifest.parity_count(),
     max_encoded_bytes~,
   )
-  if manifest.stripe_payload_limit() > codec.data_count() * codec.max_shard_bytes() {
+  if manifest.stripe_payload_limit() >
+    codec.data_count() * codec.max_shard_bytes() {
     raise ResourceLimit("codec budget cannot hold manifest stripe")
   }
-  {
-    codec,
-    manifest,
-    next_stripe: 0,
-    decoded_bytes: 0,
-    repaired_shards: 0,
-  }
+  { codec, manifest, next_stripe: 0, decoded_bytes: 0, repaired_shards: 0, }
 }
 
 ///|
@@ -68,7 +63,8 @@ pub fn ObjectDecoder::push_stripe(
     raise InvalidManifest("decoded stripe length differs from manifest")
   }
   self.decoded_bytes = self.decoded_bytes + payload.length()
-  self.repaired_shards = self.repaired_shards + recovery.missing_indices().length()
+  self.repaired_shards = self.repaired_shards +
+    recovery.missing_indices().length()
   self.next_stripe = self.next_stripe + 1
   payload
 }

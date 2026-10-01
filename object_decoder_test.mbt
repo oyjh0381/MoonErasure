@@ -11,10 +11,13 @@ test "sequential decoder emits one recovered stripe at a time" {
   let decoder = try! @moonerasure.ObjectDecoder::new(object.manifest())
   let output : Array[Byte] = []
   let frames = object.frames()
-  for stripe_index = 0; stripe_index < object.manifest().stripe_count(); stripe_index = stripe_index + 1 {
+  for stripe_index = 0
+      stripe_index < object.manifest().stripe_count()
+      stripe_index = stripe_index + 1 {
     let group : Array[@moonerasure.ShardEnvelope] = []
     for frame in frames {
-      if frame.stripe_index() == stripe_index && frame.shard_index() != stripe_index % 5 {
+      if frame.stripe_index() == stripe_index &&
+        frame.shard_index() != stripe_index % 5 {
         group.push(frame)
       }
     }

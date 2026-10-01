@@ -39,7 +39,11 @@ test "bundle stream refuses incomplete input and trailing bytes" {
   let object = try! @moonerasure.encode_object(codec, b"abcd", 1)
   let bytes = try! @moonerasure.export_bundle(object)
   let incomplete = try! @moonerasure.BundleStream::new()
-  ignore(try! incomplete.push(Bytes::from_array(bytes[0:bytes.length() - 1].to_array())))
+  ignore(
+    try! incomplete.push(
+      Bytes::from_array(bytes[0:bytes.length() - 1].to_array()),
+    ),
+  )
   let truncated = try incomplete.finish() catch {
     @moonerasure.InvalidEnvelope(_) => true
     _ => false

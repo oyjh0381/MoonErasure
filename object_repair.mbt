@@ -39,7 +39,8 @@ pub fn repair_object(
     manifest.parity_count(),
     max_encoded_bytes~,
   )
-  if manifest.stripe_payload_limit() > codec.data_count() * codec.max_shard_bytes() {
+  if manifest.stripe_payload_limit() >
+    codec.data_count() * codec.max_shard_bytes() {
     raise ResourceLimit("codec budget cannot hold manifest stripe")
   }
   if frames.length() > manifest.stripe_count() * codec.total_count() {
@@ -75,5 +76,5 @@ pub fn repair_object(
       }
     }
   }
-  { replacements, repaired_stripes }
+  { replacements, repaired_stripes, }
 }
