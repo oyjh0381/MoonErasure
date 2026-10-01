@@ -10,11 +10,11 @@ pub struct Codec {
 }
 
 ///|
-pub fn Codec::new(
+fn validated_max_shard_bytes(
   data_count : Int,
   parity_count : Int,
-  max_encoded_bytes? : Int = 16_777_216,
-) -> Codec raise ErasureError {
+  max_encoded_bytes : Int,
+) -> Int raise ErasureError {
   if data_count < 1 || data_count > 255 || parity_count < 1 ||
     parity_count > 255 || data_count > 256 - parity_count {
     raise InvalidConfiguration("require 1..255 data/parity shards, total <= 256")
@@ -23,6 +23,16 @@ pub fn Codec::new(
     max_encoded_bytes > 268_435_456 {
     raise InvalidConfiguration("encoded byte budget must fit one byte per shard and be <= 256 MiB")
   }
+  max_encoded_bytes / (data_count + parity_count)
+}
+
+///|
+pub fn Codec::new(
+  data_count : Int,
+  parity_count : Int,
+  max_encoded_bytes? : Int = 16_777_216,
+) -> Codec raise ErasureError {
+  ignore(validated_max_shard_bytes(data_count, parity_count, max_encoded_bytes))
   let field = Field::new()
   let generator = systematic_matrix(data_count, data_count + parity_count, field)
   { data_count, parity_count, max_encoded_bytes, generator, field }

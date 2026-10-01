@@ -10,13 +10,20 @@ pub struct Manifest {
 }
 
 ///|
-pub fn Manifest::new(
-  codec : Codec,
+fn checked_manifest(
   set_id : Int,
+  data_count : Int,
+  parity_count : Int,
   stripe_payload_limit : Int,
   total_length : Int,
-  max_object_bytes? : Int = 67_108_864,
+  max_object_bytes : Int,
+  max_encoded_bytes : Int,
 ) -> Manifest raise ErasureError {
+  let max_shard_bytes = validated_max_shard_bytes(
+    data_count,
+    parity_count,
+    max_encoded_bytes,
+  )
   if set_id < 0 {
     raise InvalidManifest("set id must be nonnegative")
   }
@@ -27,7 +34,7 @@ pub fn Manifest::new(
     raise ResourceLimit("object exceeds byte budget")
   }
   if stripe_payload_limit < 1 ||
-    stripe_payload_limit > codec.data_count() * codec.max_shard_bytes() {
+    stripe_payload_limit > data_count * max_shard_bytes {
     raise InvalidManifest("stripe payload limit exceeds codec capacity")
   }
   let mut stripe_count = total_length / stripe_payload_limit
@@ -39,12 +46,31 @@ pub fn Manifest::new(
   }
   {
     set_id,
-    data_count: codec.data_count(),
-    parity_count: codec.parity_count(),
+    data_count,
+    parity_count,
     stripe_payload_limit,
     stripe_count,
     total_length,
   }
+}
+
+///|
+pub fn Manifest::new(
+  codec : Codec,
+  set_id : Int,
+  stripe_payload_limit : Int,
+  total_length : Int,
+  max_object_bytes? : Int = 67_108_864,
+) -> Manifest raise ErasureError {
+  checked_manifest(
+    set_id,
+    codec.data_count(),
+    codec.parity_count(),
+    stripe_payload_limit,
+    total_length,
+    max_object_bytes,
+    codec.max_encoded_bytes,
+  )
 }
 
 ///|
@@ -135,13 +161,14 @@ pub fn Manifest::from_bytes(
   let stripe_payload_limit = read_bounded_int(input, 16)
   let stored_stripe_count = read_bounded_int(input, 20)
   let total_length = read_bounded_int(input, 24)
-  let codec = Codec::new(data_count, parity_count, max_encoded_bytes~)
-  let manifest = Manifest::new(
-    codec,
+  let manifest = checked_manifest(
     set_id,
+    data_count,
+    parity_count,
     stripe_payload_limit,
     total_length,
-    max_object_bytes~,
+    max_object_bytes,
+    max_encoded_bytes,
   )
   if manifest.stripe_count != stored_stripe_count {
     raise InvalidManifest("stored stripe count disagrees with lengths")

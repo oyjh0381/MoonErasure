@@ -159,18 +159,16 @@ pub fn ShardEnvelope::from_bytes(
   let data_count = read_u16(input, 18)
   let parity_count = read_u16(input, 20)
   let original_length = read_bounded_int(input, 24)
-  if data_count < 1 || parity_count < 1 || data_count + parity_count > 256 {
-    raise InvalidEnvelope("invalid codec dimensions")
-  }
+  let max_shard_bytes = validated_max_shard_bytes(
+    data_count,
+    parity_count,
+    max_encoded_bytes,
+  )
   if shard_index >= data_count + parity_count {
     raise InvalidIndex(shard_index)
   }
-  if max_encoded_bytes < data_count + parity_count ||
-    max_encoded_bytes > 268_435_456 {
-    raise InvalidConfiguration("invalid frame byte budget")
-  }
   let length = input.length() - 32
-  if length > max_encoded_bytes / (data_count + parity_count) {
+  if length > max_shard_bytes {
     raise ResourceLimit("frame payload exceeds encoded byte budget")
   }
   if original_length < 1 || original_length > data_count * length {
