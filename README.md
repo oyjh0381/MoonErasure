@@ -72,4 +72,4 @@ The repository includes black-box and white-box tests for GF arithmetic, matrix 
 
 ## Design and license
 
-See [architecture](docs/ARCHITECTURE.md), [domain glossary](CONTEXT.md), [decision record](docs/adr/0001-systematic-gf256-shards.md), [selection research](docs/SELECTION_RESEARCH.md) and [third-party notice](THIRD_PARTY_NOTICES.md). Licensed under [Apache-2.0](LICENSE). No external source code or test corpus was copied into this repository.
+See [architecture](docs/ARCHITECTURE.md), [domain glossary](CONTEXT.md), [decision record](docs/adr/0001-systematic-gf256-shards.md), [selection research](docs/SELECTION_RESEARCH.md), [local review](docs/LOCAL_REVIEW.md) and [third-party notice](THIRD_PARTY_NOTICES.md). Licensed under [Apache-2.0](LICENSE). No external source code or test corpus was copied into this repository.
