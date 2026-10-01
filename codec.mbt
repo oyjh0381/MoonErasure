@@ -157,9 +157,7 @@ pub fn Codec::reconstruct(
   if shards.length() != self.total_count() {
     raise InvalidShardCount(expected=self.total_count(), actual=shards.length())
   }
-  let selected_indices : Array[Int] = []
-  let selected_shards : Array[Bytes] = []
-  let mut available = 0
+  let flags = Array::make(self.total_count(), false)
   let mut length = -1
   for index = 0; index < shards.length(); index = index + 1 {
     match shards[index] {
@@ -174,30 +172,29 @@ pub fn Codec::reconstruct(
             actual=shard.length(),
           )
         }
-        available = available + 1
-        if selected_indices.length() < self.data_count {
-          selected_indices.push(index)
-          selected_shards.push(shard)
-        }
+        flags[index] = true
       }
       None => ()
     }
   }
-  if available < self.data_count {
-    raise NotEnoughShards(required=self.data_count, available~)
+  let plan = self.plan(flags)
+  if !plan.recoverable() {
+    raise NotEnoughShards(required=self.data_count, available=plan.available())
   }
-  let data : Array[Bytes] = []
-  let mut all_data_present = true
-  for index = 0; index < self.data_count; index = index + 1 {
-    if shards[index] is None {
-      all_data_present = false
+  let selected_indices = plan.selected_indices()
+  let selected_shards : Array[Bytes] = []
+  for index in selected_indices {
+    match shards[index] {
+      Some(shard) => selected_shards.push(shard)
+      None => raise NotEnoughShards(required=self.data_count, available=plan.available())
     }
   }
-  if all_data_present {
+  let data : Array[Bytes] = []
+  if !plan.needs_decode() {
     for index = 0; index < self.data_count; index = index + 1 {
       match shards[index] {
         Some(shard) => data.push(copy_shard(shard))
-        None => raise NotEnoughShards(required=self.data_count, available~)
+        None => raise NotEnoughShards(required=self.data_count, available=plan.available())
       }
     }
   } else {
