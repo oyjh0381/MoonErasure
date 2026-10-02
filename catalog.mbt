@@ -80,6 +80,35 @@ pub fn FrameCatalog::get(
 }
 
 ///|
+/// Evict a slot after a storage read or checksum check shows that its bytes
+/// can no longer be trusted. Removing an absent slot is a harmless no-op.
+pub fn FrameCatalog::invalidate(
+  self : FrameCatalog,
+  stripe_index : Int,
+  shard_index : Int,
+) -> Bool raise ErasureError {
+  let slot = self.slot_index(stripe_index, shard_index)
+  if self.slots[slot] is None {
+    return false
+  }
+  self.slots[slot] = None
+  self.stored_count = self.stored_count - 1
+  true
+}
+
+///|
+/// Parse a serialized frame and admit it only if both its CRC and catalog
+/// identity checks pass. A failed call leaves the catalog unchanged.
+pub fn FrameCatalog::add_bytes(
+  self : FrameCatalog,
+  wire : Bytes,
+  max_encoded_bytes? : Int = 16_777_216,
+) -> Unit raise ErasureError {
+  let frame = ShardEnvelope::from_bytes(wire, max_encoded_bytes~)
+  self.add(frame)
+}
+
+///|
 /// Return present frames of a stripe in canonical shard index order.
 pub fn FrameCatalog::stripe_frames(
   self : FrameCatalog,
@@ -151,4 +180,41 @@ pub fn FrameCatalog::recover_stripe(
     raise InvalidManifest("catalog recovered length differs from manifest")
   }
   recovery
+}
+
+///|
+/// Decode only the stripes intersecting a requested range from indexed
+/// frames. This is useful after an application has inventoried unordered
+/// stored fragments but needs a small portion of the original object.
+pub fn FrameCatalog::recover_range(
+  self : FrameCatalog,
+  start : Int,
+  length : Int,
+  max_encoded_bytes? : Int = 16_777_216,
+) -> Bytes raise ErasureError {
+  if start < 0 ||
+    length < 0 ||
+    start > self.manifest.total_length() ||
+    length > self.manifest.total_length() - start {
+    raise InvalidRange
+  }
+  if length == 0 {
+    return b""
+  }
+  let first = start / self.manifest.stripe_payload_limit()
+  let last = (start + length - 1) / self.manifest.stripe_payload_limit()
+  let selected : Array[ShardEnvelope] = []
+  for stripe = first; stripe <= last; stripe = stripe + 1 {
+    let group = self.stripe_frames(stripe)
+    for frame in group {
+      selected.push(frame)
+    }
+  }
+  recover_object_range(
+    self.manifest,
+    selected,
+    start,
+    length,
+    max_encoded_bytes~,
+  )
 }

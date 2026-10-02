@@ -24,6 +24,8 @@ For large inputs with a known length, `ObjectEncoder::new(codec, set_id, total_l
 
 `FrameCatalog::new(manifest)` is an optional in-memory index for unordered frame arrivals. `add(frame)` checks identity, lengths and duplicates; `missing_indices`, `stripe_recoverable`, `stripe_frames` and `recover_stripe` support inventory and repair workflows. Catalog admission checks metadata; recovery still verifies the codeword.
 
+`add_bytes` parses and CRC-checks a serialized frame before admission. `invalidate(stripe_index, shard_index)` removes a slot after independent storage damage is observed, returns whether it was present, and lets an adapter add a reconstructed replacement. `recover_range(start, length)` reads only intersecting indexed stripes. All three operate on the caller-owned in-memory catalog; they do not perform filesystem or network I/O.
+
 ## Partial reads and archives
 
 `recover_object_range(manifest, frames, start, length)` decodes only intersecting stripes. `recover_serialized_range` takes raw frames, reports malformed input positions, and does the same. The caller can fetch only frames for those stripes; loss elsewhere does not block the range. An empty valid range returns empty bytes.

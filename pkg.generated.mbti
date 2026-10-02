@@ -117,11 +117,14 @@ pub struct FrameCatalog {
   mut stored_count : Int
 }
 pub fn FrameCatalog::add(Self, ShardEnvelope) -> Unit raise ErasureError
+pub fn FrameCatalog::add_bytes(Self, Bytes, max_encoded_bytes? : Int) -> Unit raise ErasureError
 pub fn FrameCatalog::capacity(Self) -> Int
 pub fn FrameCatalog::get(Self, Int, Int) -> ShardEnvelope? raise ErasureError
+pub fn FrameCatalog::invalidate(Self, Int, Int) -> Bool raise ErasureError
 pub fn FrameCatalog::manifest(Self) -> Manifest
 pub fn FrameCatalog::missing_indices(Self, Int) -> Array[Int] raise ErasureError
 pub fn FrameCatalog::new(Manifest) -> Self
+pub fn FrameCatalog::recover_range(Self, Int, Int, max_encoded_bytes? : Int) -> Bytes raise ErasureError
 pub fn FrameCatalog::recover_stripe(Self, Int, max_encoded_bytes? : Int) -> StripeRecovery raise ErasureError
 pub fn FrameCatalog::stored_count(Self) -> Int
 pub fn FrameCatalog::stripe_frames(Self, Int) -> Array[ShardEnvelope] raise ErasureError

@@ -44,6 +44,8 @@ let replacements = try! @moonerasure.repair_object(object.manifest(), retained)
 
 The example drops two shards per stripe and reconstructs them from the remaining three. In production, store each frame's `to_bytes()` independently and store the 32-byte manifest separately with appropriate durability. Parse received bytes with `ShardEnvelope::from_bytes`; alternatively `recover_serialized_object` treats malformed or CRC-failed frames as known erasures and returns issue positions. Do not trust the shard index inside a damaged frame.
 
+For long-lived storage inventories, `FrameCatalog::add_bytes` validates CRC before admission, `invalidate` removes a suspect slot, and `recover_range` reads only relevant indexed stripes. See [October features](docs/OCTOBER_FEATURES.md).
+
 ## Runnable scenarios
 
 | Command | Demonstrated need |
