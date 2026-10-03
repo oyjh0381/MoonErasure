@@ -10,7 +10,25 @@ MoonBit applications that distribute backups or packets need a reusable redundan
 
 ## Install and run
 
-Install the [MoonBit toolchain](https://docs.moonbitlang.com/en/latest/toolchain/), then from this repository:
+Install the [MoonBit toolchain](https://docs.moonbitlang.com/en/latest/toolchain/), then add the published library:
+
+```sh
+moon add oyjh0381/moonerasure@0.1.0
+```
+
+Import the library in your application's `moon.pkg`:
+
+```moonbit
+import {
+  "oyjh0381/moonerasure",
+}
+```
+
+Source: [oyjh0381/MoonErasure](https://github.com/oyjh0381/MoonErasure).
+Package: [oyjh0381/moonerasure](https://mooncakes.io/docs/oyjh0381/moonerasure).
+Maintainer: `oyjh0381`.
+
+From the source repository, run:
 
 ```sh
 moon check --target all --deny-warn
@@ -19,7 +37,7 @@ moon test --target all --deny-warn
 moon run cmd/main --target wasm-gc
 ```
 
-The intended mooncakes module name is `oyjh0381/moonerasure`. Until publication, use this repository as a local MoonBit module dependency. No third-party runtime packages are required. The `moon.mod` repository URL is the planned public location; it is not a claim that a remote exists yet.
+The Mooncakes module name is `oyjh0381/moonerasure`. No third-party runtime packages are required. Release and verification evidence is recorded in [the 0.1.0 release record](docs/RELEASE_0.1.0.md).
 
 ## Minimal library use
 
@@ -55,6 +73,7 @@ For long-lived storage inventories, `FrameCatalog::add_bytes` validates CRC befo
 | `moon run examples/scrub` | Frame inventory, health inspection, and persisted-slot repair. |
 | `moon run examples/range` | Recover a byte range by fetching only overlapping stripes. |
 | `moon run examples/stream` | Encode arbitrary input chunks and decode one stripe at a time. |
+| `moon run examples/maintenance` | Admit a frame batch atomically and plan reads over currently recoverable byte ranges. |
 | `moon run examples/benchmark --target native` | Verified fixed workload for local timing of repeated loss patterns. |
 
 All examples exit with a failing assertion if the round trip is wrong. [API guide](docs/API.md) explains each public workflow; [wire format](docs/WIRE_FORMAT.md) records byte layouts and compatibility rules.
