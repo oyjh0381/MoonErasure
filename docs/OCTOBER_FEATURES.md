@@ -10,4 +10,4 @@ New tests cover successful CRC admission, bit-flipped frame rejection without ca
 
 `FrameCatalog::add_many(frames, max_frames?)` 在分离槽表上验证所有已解析帧，成功才提交；外部帧字节须先经 CRC 解析，批量操作不提供跨线程或持久化事务。`recoverable_ranges(max_ranges?)` 返回分片数量足够的最大连续半开字节区间，不解码整对象，也不认证分片内容。范围读取的参数是起点和长度：`recover_range(range.start(), range.length())`。
 
-运行 `moon run examples/maintenance --target wasm-gc`，展示两段可恢复数据与中间缺失条带。详见 [本轮审查与复杂度](SECOND_REVIEW.md) 和 [十月申报资料稿](../十月项目申报书.md)。
+运行 `moon run examples/maintenance --target wasm-gc`，展示两段可恢复数据与中间缺失条带。详见 [算法与复杂度](ARCHITECTURE.md)。

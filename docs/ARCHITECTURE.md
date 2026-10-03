@@ -20,4 +20,4 @@ The object API is in-memory and bounded. Incremental encoding and decoding suppo
 
 Known corruption and adversarial tampering are different. CRC-32C catches many accidental changes and makes a bad frame discardable, but an attacker can recalculate CRC. Use a cryptographic hash or authenticated transport outside this library. If only exactly `k` frames survive, the code cannot tell which of those has an unknown incorrect byte. When more than `k` frames survive, the implementation checks that the reconstructed codeword matches all supplied frames, but a mismatch identifies inconsistency, not necessarily the malicious frame.
 
-The design choice and ecosystem rationale are recorded in [ADR 0001](adr/0001-systematic-gf256-shards.md) and [selection research](SELECTION_RESEARCH.md).
+The systematic coding design and its trade-offs are recorded in [ADR 0001](adr/0001-systematic-gf256-shards.md).
