@@ -118,6 +118,7 @@ pub struct FrameCatalog {
 }
 pub fn FrameCatalog::add(Self, ShardEnvelope) -> Unit raise ErasureError
 pub fn FrameCatalog::add_bytes(Self, Bytes, max_encoded_bytes? : Int) -> Unit raise ErasureError
+pub fn FrameCatalog::add_many(Self, Array[ShardEnvelope], max_frames? : Int) -> Int raise ErasureError
 pub fn FrameCatalog::capacity(Self) -> Int
 pub fn FrameCatalog::get(Self, Int, Int) -> ShardEnvelope? raise ErasureError
 pub fn FrameCatalog::invalidate(Self, Int, Int) -> Bool raise ErasureError
@@ -126,6 +127,7 @@ pub fn FrameCatalog::missing_indices(Self, Int) -> Array[Int] raise ErasureError
 pub fn FrameCatalog::new(Manifest) -> Self
 pub fn FrameCatalog::recover_range(Self, Int, Int, max_encoded_bytes? : Int) -> Bytes raise ErasureError
 pub fn FrameCatalog::recover_stripe(Self, Int, max_encoded_bytes? : Int) -> StripeRecovery raise ErasureError
+pub fn FrameCatalog::recoverable_ranges(Self, max_ranges? : Int) -> Array[RecoverableRange] raise ErasureError
 pub fn FrameCatalog::stored_count(Self) -> Int
 pub fn FrameCatalog::stripe_frames(Self, Int) -> Array[ShardEnvelope] raise ErasureError
 pub fn FrameCatalog::stripe_recoverable(Self, Int) -> Bool raise ErasureError
@@ -230,6 +232,14 @@ pub struct ObjectRepair {
 pub fn ObjectRepair::repaired_stripes(Self) -> Int
 pub fn ObjectRepair::replacement_count(Self) -> Int
 pub fn ObjectRepair::replacements(Self) -> Array[ShardEnvelope]
+
+pub struct RecoverableRange {
+  start : Int
+  end : Int
+}
+pub fn RecoverableRange::end(Self) -> Int
+pub fn RecoverableRange::length(Self) -> Int
+pub fn RecoverableRange::start(Self) -> Int
 
 pub struct RecoverySession {
   codec : Codec

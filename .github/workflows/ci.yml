@@ -32,6 +32,7 @@ jobs:
           moon run examples/scrub --target wasm-gc
           moon run examples/range --target wasm-gc
           moon run examples/stream --target wasm-gc
+          moon run examples/maintenance --target wasm-gc
       - name: Verify formatting and public interfaces
         run: |
           moon fmt
