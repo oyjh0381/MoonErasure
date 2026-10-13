@@ -5,17 +5,17 @@ pub struct ObjectEncoder {
   codec : Codec
   manifest : Manifest
   mut pending : Array[Byte]
-  mut accepted_bytes : Int
-  mut emitted_stripes : Int
+  mut accepted_bytes : Int32
+  mut emitted_stripes : Int32
 }
 
 ///|
 pub fn ObjectEncoder::new(
   codec : Codec,
-  set_id : Int,
-  total_length : Int,
-  stripe_payload_limit? : Int = 65_536,
-  max_object_bytes? : Int = 67_108_864,
+  set_id : Int32,
+  total_length : Int32,
+  stripe_payload_limit~ : Int32 = 65_536,
+  max_object_bytes~ : Int32 = 67_108_864,
 ) -> ObjectEncoder raise ErasureError {
   let manifest = Manifest::new(
     codec,
@@ -33,17 +33,17 @@ pub fn ObjectEncoder::manifest(self : ObjectEncoder) -> Manifest {
 }
 
 ///|
-pub fn ObjectEncoder::accepted_bytes(self : ObjectEncoder) -> Int {
+pub fn ObjectEncoder::accepted_bytes(self : ObjectEncoder) -> Int32 {
   self.accepted_bytes
 }
 
 ///|
-pub fn ObjectEncoder::emitted_stripes(self : ObjectEncoder) -> Int {
+pub fn ObjectEncoder::emitted_stripes(self : ObjectEncoder) -> Int32 {
   self.emitted_stripes
 }
 
 ///|
-pub fn ObjectEncoder::buffered_bytes(self : ObjectEncoder) -> Int {
+pub fn ObjectEncoder::buffered_bytes(self : ObjectEncoder) -> Int32 {
   self.pending.length()
 }
 

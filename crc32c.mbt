@@ -1,6 +1,6 @@
 ///|
 /// Castagnoli CRC-32C for accidental-damage detection. This is not a MAC.
-fn crc32c_update(state : UInt, byte : Byte) -> UInt {
+fn crc32c_update(state : UInt32, byte : Byte) -> UInt32 {
   let mut current = state ^ byte.to_uint()
   for _ in 0..<8 {
     if (current & 1U) == 1U {
@@ -13,7 +13,7 @@ fn crc32c_update(state : UInt, byte : Byte) -> UInt {
 }
 
 ///|
-pub fn crc32c(input : Bytes) -> UInt {
+pub fn crc32c(input : Bytes) -> UInt32 {
   let mut state = 0xffffffffU
   for byte in input {
     state = crc32c_update(state, byte)
@@ -22,7 +22,7 @@ pub fn crc32c(input : Bytes) -> UInt {
 }
 
 ///|
-fn crc32c_header_payload(header : Array[Byte], payload : Bytes) -> UInt {
+fn crc32c_header_payload(header : Array[Byte], payload : Bytes) -> UInt32 {
   let mut state = 0xffffffffU
   for index = 0; index < 28; index = index + 1 {
     state = crc32c_update(state, header[index])

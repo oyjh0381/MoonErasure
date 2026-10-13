@@ -1,14 +1,14 @@
 ///|
 /// Small field matrix used only for codec construction and erasure recovery.
 pub struct Matrix {
-  rows : Int
-  cols : Int
-  cells : Array[Array[Int]]
+  rows : Int32
+  cols : Int32
+  cells : Array[Array[Int32]]
 }
 
 ///|
-fn Matrix::zero(rows : Int, cols : Int) -> Matrix {
-  let cells : Array[Array[Int]] = []
+fn Matrix::zero(rows : Int32, cols : Int32) -> Matrix {
+  let cells : Array[Array[Int32]] = []
   for row = 0; row < rows; row = row + 1 {
     cells.push(Array::make(cols, 0))
   }
@@ -16,7 +16,7 @@ fn Matrix::zero(rows : Int, cols : Int) -> Matrix {
 }
 
 ///|
-fn Matrix::top_square(self : Matrix, size : Int) -> Matrix {
+fn Matrix::top_square(self : Matrix, size : Int32) -> Matrix {
   let result = Matrix::zero(size, size)
   for row = 0; row < size; row = row + 1 {
     for col = 0; col < size; col = col + 1 {
@@ -27,7 +27,7 @@ fn Matrix::top_square(self : Matrix, size : Int) -> Matrix {
 }
 
 ///|
-fn Matrix::selected_rows(self : Matrix, indices : Array[Int]) -> Matrix {
+fn Matrix::selected_rows(self : Matrix, indices : Array[Int32]) -> Matrix {
   let result = Matrix::zero(indices.length(), self.cols)
   for row = 0; row < indices.length(); row = row + 1 {
     for col = 0; col < self.cols; col = col + 1 {
@@ -112,7 +112,7 @@ fn Matrix::inverse(self : Matrix, field : Field) -> Matrix raise ErasureError {
 }
 
 ///|
-fn vandermonde(rows : Int, cols : Int, field : Field) -> Matrix {
+fn vandermonde(rows : Int32, cols : Int32, field : Field) -> Matrix {
   let result = Matrix::zero(rows, cols)
   for row = 0; row < rows; row = row + 1 {
     for col = 0; col < cols; col = col + 1 {
@@ -124,8 +124,8 @@ fn vandermonde(rows : Int, cols : Int, field : Field) -> Matrix {
 
 ///|
 fn systematic_matrix(
-  data_count : Int,
-  total_count : Int,
+  data_count : Int32,
+  total_count : Int32,
   field : Field,
 ) -> Matrix raise ErasureError {
   let raw = vandermonde(total_count, data_count, field)

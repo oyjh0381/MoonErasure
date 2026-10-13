@@ -3,7 +3,7 @@
 /// The caller decides where to persist them. Existing frames are never rewritten.
 pub struct ObjectRepair {
   replacements : Array[ShardEnvelope]
-  repaired_stripes : Int
+  repaired_stripes : Int32
 }
 
 ///|
@@ -16,12 +16,12 @@ pub fn ObjectRepair::replacements(self : ObjectRepair) -> Array[ShardEnvelope] {
 }
 
 ///|
-pub fn ObjectRepair::replacement_count(self : ObjectRepair) -> Int {
+pub fn ObjectRepair::replacement_count(self : ObjectRepair) -> Int32 {
   self.replacements.length()
 }
 
 ///|
-pub fn ObjectRepair::repaired_stripes(self : ObjectRepair) -> Int {
+pub fn ObjectRepair::repaired_stripes(self : ObjectRepair) -> Int32 {
   self.repaired_stripes
 }
 
@@ -32,7 +32,7 @@ pub fn ObjectRepair::repaired_stripes(self : ObjectRepair) -> Int {
 pub fn repair_object(
   manifest : Manifest,
   frames : Array[ShardEnvelope],
-  max_encoded_bytes? : Int = 16_777_216,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> ObjectRepair raise ErasureError {
   let codec = Codec::new(
     manifest.data_count(),

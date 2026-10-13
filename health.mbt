@@ -19,15 +19,15 @@ pub fn StripeStatus::label(self : StripeStatus) -> String {
 
 ///|
 pub struct StripeHealth {
-  stripe_index : Int
+  stripe_index : Int32
   status : StripeStatus
-  present_count : Int
-  missing_indices : Array[Int]
+  present_count : Int32
+  missing_indices : Array[Int32]
   reason_code : String?
 }
 
 ///|
-pub fn StripeHealth::stripe_index(self : StripeHealth) -> Int {
+pub fn StripeHealth::stripe_index(self : StripeHealth) -> Int32 {
   self.stripe_index
 }
 
@@ -37,13 +37,13 @@ pub fn StripeHealth::status(self : StripeHealth) -> StripeStatus {
 }
 
 ///|
-pub fn StripeHealth::present_count(self : StripeHealth) -> Int {
+pub fn StripeHealth::present_count(self : StripeHealth) -> Int32 {
   self.present_count
 }
 
 ///|
-pub fn StripeHealth::missing_indices(self : StripeHealth) -> Array[Int] {
-  let copy : Array[Int] = []
+pub fn StripeHealth::missing_indices(self : StripeHealth) -> Array[Int32] {
+  let copy : Array[Int32] = []
   for index in self.missing_indices {
     copy.push(index)
   }
@@ -57,9 +57,9 @@ pub fn StripeHealth::reason_code(self : StripeHealth) -> String? {
 
 ///|
 fn invalid_health(
-  stripe_index : Int,
-  present_count : Int,
-  missing_indices : Array[Int],
+  stripe_index : Int32,
+  present_count : Int32,
+  missing_indices : Array[Int32],
   reason_code : String,
 ) -> StripeHealth {
   {
@@ -76,8 +76,8 @@ fn invalid_health(
 pub fn inspect_stripe(
   codec : Codec,
   frames : Array[ShardEnvelope],
-  set_id : Int,
-  stripe_index : Int,
+  set_id : Int32,
+  stripe_index : Int32,
 ) -> StripeHealth {
   let present = Array::make(codec.total_count(), false)
   let mut reason_code : String? = None
@@ -98,7 +98,7 @@ pub fn inspect_stripe(
       present_count = present_count + 1
     }
   }
-  let missing_indices : Array[Int] = []
+  let missing_indices : Array[Int32] = []
   for index = 0; index < present.length(); index = index + 1 {
     if !present[index] {
       missing_indices.push(index)
@@ -144,10 +144,10 @@ pub fn inspect_stripe(
 ///|
 pub struct ObjectHealth {
   stripes : Array[StripeHealth]
-  healthy_count : Int
-  repairable_count : Int
-  unrecoverable_count : Int
-  invalid_count : Int
+  healthy_count : Int32
+  repairable_count : Int32
+  unrecoverable_count : Int32
+  invalid_count : Int32
 }
 
 ///|
@@ -160,22 +160,22 @@ pub fn ObjectHealth::stripes(self : ObjectHealth) -> Array[StripeHealth] {
 }
 
 ///|
-pub fn ObjectHealth::healthy_count(self : ObjectHealth) -> Int {
+pub fn ObjectHealth::healthy_count(self : ObjectHealth) -> Int32 {
   self.healthy_count
 }
 
 ///|
-pub fn ObjectHealth::repairable_count(self : ObjectHealth) -> Int {
+pub fn ObjectHealth::repairable_count(self : ObjectHealth) -> Int32 {
   self.repairable_count
 }
 
 ///|
-pub fn ObjectHealth::unrecoverable_count(self : ObjectHealth) -> Int {
+pub fn ObjectHealth::unrecoverable_count(self : ObjectHealth) -> Int32 {
   self.unrecoverable_count
 }
 
 ///|
-pub fn ObjectHealth::invalid_count(self : ObjectHealth) -> Int {
+pub fn ObjectHealth::invalid_count(self : ObjectHealth) -> Int32 {
   self.invalid_count
 }
 
@@ -190,7 +190,7 @@ pub fn ObjectHealth::fully_recoverable(self : ObjectHealth) -> Bool {
 pub fn inspect_object(
   manifest : Manifest,
   frames : Array[ShardEnvelope],
-  max_encoded_bytes? : Int = 16_777_216,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> ObjectHealth raise ErasureError {
   let codec = Codec::new(
     manifest.data_count(),

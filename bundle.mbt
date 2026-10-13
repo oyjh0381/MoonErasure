@@ -4,7 +4,7 @@
 /// their own checksums so they can also be extracted and stored independently.
 pub fn export_bundle(
   object : EncodedObject,
-  max_output_bytes? : Int = 134_217_728,
+  max_output_bytes~ : Int32 = 134_217_728,
 ) -> Bytes raise ErasureError {
   if max_output_bytes < 56 || max_output_bytes > 268_435_456 {
     raise InvalidConfiguration(
@@ -46,9 +46,9 @@ pub fn export_bundle(
 /// through `recover_serialized_stripe` when some bytes are unavailable.
 pub fn import_bundle(
   input : Bytes,
-  max_input_bytes? : Int = 134_217_728,
-  max_object_bytes? : Int = 67_108_864,
-  max_encoded_bytes? : Int = 16_777_216,
+  max_input_bytes~ : Int32 = 134_217_728,
+  max_object_bytes~ : Int32 = 67_108_864,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> EncodedObject raise ErasureError {
   if max_input_bytes < 56 || max_input_bytes > 268_435_456 {
     raise InvalidConfiguration("bundle input byte budget must be <= 256 MiB")

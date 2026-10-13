@@ -3,22 +3,22 @@
 /// Integer fields are unsigned little-endian; ids and lengths are capped at
 /// signed 31-bit values so they behave identically on all MoonBit targets.
 pub struct ShardEnvelope {
-  set_id : Int
-  stripe_index : Int
-  shard_index : Int
-  data_count : Int
-  parity_count : Int
-  original_length : Int
+  set_id : Int32
+  stripe_index : Int32
+  shard_index : Int32
+  data_count : Int32
+  parity_count : Int32
+  original_length : Int32
   payload : Bytes
 }
 
 ///|
 pub fn ShardEnvelope::new(
   codec : Codec,
-  set_id : Int,
-  stripe_index : Int,
-  shard_index : Int,
-  original_length : Int,
+  set_id : Int32,
+  stripe_index : Int32,
+  shard_index : Int32,
+  original_length : Int32,
   payload : Bytes,
 ) -> ShardEnvelope raise ErasureError {
   if set_id < 0 || stripe_index < 0 {
@@ -48,32 +48,32 @@ pub fn ShardEnvelope::new(
 }
 
 ///|
-pub fn ShardEnvelope::set_id(self : ShardEnvelope) -> Int {
+pub fn ShardEnvelope::set_id(self : ShardEnvelope) -> Int32 {
   self.set_id
 }
 
 ///|
-pub fn ShardEnvelope::stripe_index(self : ShardEnvelope) -> Int {
+pub fn ShardEnvelope::stripe_index(self : ShardEnvelope) -> Int32 {
   self.stripe_index
 }
 
 ///|
-pub fn ShardEnvelope::shard_index(self : ShardEnvelope) -> Int {
+pub fn ShardEnvelope::shard_index(self : ShardEnvelope) -> Int32 {
   self.shard_index
 }
 
 ///|
-pub fn ShardEnvelope::data_count(self : ShardEnvelope) -> Int {
+pub fn ShardEnvelope::data_count(self : ShardEnvelope) -> Int32 {
   self.data_count
 }
 
 ///|
-pub fn ShardEnvelope::parity_count(self : ShardEnvelope) -> Int {
+pub fn ShardEnvelope::parity_count(self : ShardEnvelope) -> Int32 {
   self.parity_count
 }
 
 ///|
-pub fn ShardEnvelope::original_length(self : ShardEnvelope) -> Int {
+pub fn ShardEnvelope::original_length(self : ShardEnvelope) -> Int32 {
   self.original_length
 }
 
@@ -83,25 +83,25 @@ pub fn ShardEnvelope::payload(self : ShardEnvelope) -> Bytes {
 }
 
 ///|
-fn write_u16(output : Array[Byte], value : Int) -> Unit {
+fn write_u16(output : Array[Byte], value : Int32) -> Unit {
   output.push((value & 0xff).to_byte())
   output.push(((value >> 8) & 0xff).to_byte())
 }
 
 ///|
-fn write_u32(output : Array[Byte], value : UInt) -> Unit {
+fn write_u32(output : Array[Byte], value : UInt32) -> Unit {
   for shift in [0, 8, 16, 24] {
     output.push(((value >> shift) & 0xffU).to_byte())
   }
 }
 
 ///|
-fn read_u16(input : Bytes, offset : Int) -> Int {
+fn read_u16(input : Bytes, offset : Int32) -> Int32 {
   input[offset].to_int() | (input[offset + 1].to_int() << 8)
 }
 
 ///|
-fn read_u32(input : Bytes, offset : Int) -> UInt {
+fn read_u32(input : Bytes, offset : Int32) -> UInt32 {
   input[offset].to_uint() |
   (input[offset + 1].to_uint() << 8) |
   (input[offset + 2].to_uint() << 16) |
@@ -109,7 +109,7 @@ fn read_u32(input : Bytes, offset : Int) -> UInt {
 }
 
 ///|
-fn read_bounded_int(input : Bytes, offset : Int) -> Int raise ErasureError {
+fn read_bounded_int(input : Bytes, offset : Int32) -> Int32 raise ErasureError {
   let value = read_u32(input, offset)
   if value > 0x7fffffffU {
     raise InvalidEnvelope("integer exceeds portable signed range")
@@ -141,7 +141,7 @@ pub fn ShardEnvelope::to_bytes(self : ShardEnvelope) -> Bytes {
 /// Parse one bounded frame. Invalid metadata and damaged payloads fail closed.
 pub fn ShardEnvelope::from_bytes(
   input : Bytes,
-  max_encoded_bytes? : Int = 16_777_216,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> ShardEnvelope raise ErasureError {
   if input.length() < 33 {
     raise InvalidEnvelope("frame is shorter than header plus one payload byte")

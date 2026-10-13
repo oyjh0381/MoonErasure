@@ -2,20 +2,20 @@
 /// A deterministic preflight for a pattern of present and erased shards.
 /// It does not read shard bytes or make an integrity assertion.
 pub struct RepairPlan {
-  required : Int
-  available : Int
-  selected_indices : Array[Int]
-  missing_data_indices : Array[Int]
-  missing_parity_indices : Array[Int]
+  required : Int32
+  available : Int32
+  selected_indices : Array[Int32]
+  missing_data_indices : Array[Int32]
+  missing_parity_indices : Array[Int32]
 }
 
 ///|
-pub fn RepairPlan::required(self : RepairPlan) -> Int {
+pub fn RepairPlan::required(self : RepairPlan) -> Int32 {
   self.required
 }
 
 ///|
-pub fn RepairPlan::available(self : RepairPlan) -> Int {
+pub fn RepairPlan::available(self : RepairPlan) -> Int32 {
   self.available
 }
 
@@ -25,7 +25,7 @@ pub fn RepairPlan::recoverable(self : RepairPlan) -> Bool {
 }
 
 ///|
-pub fn RepairPlan::minimum_additional_shards(self : RepairPlan) -> Int {
+pub fn RepairPlan::minimum_additional_shards(self : RepairPlan) -> Int32 {
   if self.recoverable() {
     0
   } else {
@@ -39,8 +39,8 @@ pub fn RepairPlan::needs_decode(self : RepairPlan) -> Bool {
 }
 
 ///|
-pub fn RepairPlan::selected_indices(self : RepairPlan) -> Array[Int] {
-  let result : Array[Int] = []
+pub fn RepairPlan::selected_indices(self : RepairPlan) -> Array[Int32] {
+  let result : Array[Int32] = []
   for index in self.selected_indices {
     result.push(index)
   }
@@ -48,8 +48,8 @@ pub fn RepairPlan::selected_indices(self : RepairPlan) -> Array[Int] {
 }
 
 ///|
-pub fn RepairPlan::missing_data_indices(self : RepairPlan) -> Array[Int] {
-  let result : Array[Int] = []
+pub fn RepairPlan::missing_data_indices(self : RepairPlan) -> Array[Int32] {
+  let result : Array[Int32] = []
   for index in self.missing_data_indices {
     result.push(index)
   }
@@ -57,8 +57,8 @@ pub fn RepairPlan::missing_data_indices(self : RepairPlan) -> Array[Int] {
 }
 
 ///|
-pub fn RepairPlan::missing_parity_indices(self : RepairPlan) -> Array[Int] {
-  let result : Array[Int] = []
+pub fn RepairPlan::missing_parity_indices(self : RepairPlan) -> Array[Int32] {
+  let result : Array[Int32] = []
   for index in self.missing_parity_indices {
     result.push(index)
   }
@@ -78,9 +78,9 @@ pub fn Codec::plan(
       actual=present.length(),
     )
   }
-  let selected_indices : Array[Int] = []
-  let missing_data_indices : Array[Int] = []
-  let missing_parity_indices : Array[Int] = []
+  let selected_indices : Array[Int32] = []
+  let missing_data_indices : Array[Int32] = []
+  let missing_parity_indices : Array[Int32] = []
   let mut available = 0
   for index = 0; index < present.length(); index = index + 1 {
     if present[index] {

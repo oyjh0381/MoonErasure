@@ -3,8 +3,8 @@
 pub struct StripeRecovery {
   payload : Bytes
   shards : Array[ShardEnvelope]
-  missing_indices : Array[Int]
-  provided_count : Int
+  missing_indices : Array[Int32]
+  provided_count : Int32
 }
 
 ///|
@@ -22,8 +22,8 @@ pub fn StripeRecovery::shards(self : StripeRecovery) -> Array[ShardEnvelope] {
 }
 
 ///|
-pub fn StripeRecovery::missing_indices(self : StripeRecovery) -> Array[Int] {
-  let result : Array[Int] = []
+pub fn StripeRecovery::missing_indices(self : StripeRecovery) -> Array[Int32] {
+  let result : Array[Int32] = []
   for index in self.missing_indices {
     result.push(index)
   }
@@ -31,7 +31,7 @@ pub fn StripeRecovery::missing_indices(self : StripeRecovery) -> Array[Int] {
 }
 
 ///|
-pub fn StripeRecovery::provided_count(self : StripeRecovery) -> Int {
+pub fn StripeRecovery::provided_count(self : StripeRecovery) -> Int32 {
   self.provided_count
 }
 
@@ -40,8 +40,8 @@ pub fn StripeRecovery::provided_count(self : StripeRecovery) -> Int {
 pub fn encode_stripe(
   codec : Codec,
   payload : Bytes,
-  set_id : Int,
-  stripe_index : Int,
+  set_id : Int32,
+  stripe_index : Int32,
 ) -> Array[ShardEnvelope] raise ErasureError {
   if payload.length() < 1 {
     raise EmptyShard
@@ -89,8 +89,8 @@ pub fn encode_stripe(
 pub fn recover_stripe(
   codec : Codec,
   frames : Array[ShardEnvelope],
-  set_id : Int,
-  stripe_index : Int,
+  set_id : Int32,
+  stripe_index : Int32,
 ) -> StripeRecovery raise ErasureError {
   if set_id < 0 || stripe_index < 0 {
     raise InvalidEnvelope("set and stripe ids must be nonnegative")
@@ -131,7 +131,7 @@ pub fn recover_stripe(
   if original_length < 1 || original_length > codec.data_count() * shard_length {
     raise InvalidEnvelope("invalid stripe original length")
   }
-  let missing_indices : Array[Int] = []
+  let missing_indices : Array[Int32] = []
   for index = 0; index < present.length(); index = index + 1 {
     if present[index] is None {
       missing_indices.push(index)

@@ -29,8 +29,8 @@ pub fn ScannedObjectRepair::issues(
 pub fn repair_serialized_object(
   manifest : Manifest,
   inputs : Array[Bytes],
-  max_encoded_bytes? : Int = 16_777_216,
-  max_total_bytes? : Int = 134_217_728,
+  max_encoded_bytes~ : Int32 = 16_777_216,
+  max_total_bytes~ : Int32 = 134_217_728,
 ) -> ScannedObjectRepair raise ErasureError {
   let total_slots = manifest.stripe_count() *
     (manifest.data_count() + manifest.parity_count())

@@ -20,15 +20,15 @@ pub fn EncodedObject::frames(self : EncodedObject) -> Array[ShardEnvelope] {
 }
 
 ///|
-pub fn EncodedObject::frame_count(self : EncodedObject) -> Int {
+pub fn EncodedObject::frame_count(self : EncodedObject) -> Int32 {
   self.frames.length()
 }
 
 ///|
 pub struct ObjectRecovery {
   payload : Bytes
-  repaired_shard_count : Int
-  stripe_count : Int
+  repaired_shard_count : Int32
+  stripe_count : Int32
 }
 
 ///|
@@ -37,12 +37,12 @@ pub fn ObjectRecovery::payload(self : ObjectRecovery) -> Bytes {
 }
 
 ///|
-pub fn ObjectRecovery::repaired_shard_count(self : ObjectRecovery) -> Int {
+pub fn ObjectRecovery::repaired_shard_count(self : ObjectRecovery) -> Int32 {
   self.repaired_shard_count
 }
 
 ///|
-pub fn ObjectRecovery::stripe_count(self : ObjectRecovery) -> Int {
+pub fn ObjectRecovery::stripe_count(self : ObjectRecovery) -> Int32 {
   self.stripe_count
 }
 
@@ -51,10 +51,10 @@ pub fn ObjectRecovery::stripe_count(self : ObjectRecovery) -> Int {
 pub fn encode_object(
   codec : Codec,
   payload : Bytes,
-  set_id : Int,
-  stripe_payload_limit? : Int = 65_536,
-  max_object_bytes? : Int = 67_108_864,
-  max_output_bytes? : Int = 134_217_728,
+  set_id : Int32,
+  stripe_payload_limit~ : Int32 = 65_536,
+  max_object_bytes~ : Int32 = 67_108_864,
+  max_output_bytes~ : Int32 = 134_217_728,
 ) -> EncodedObject raise ErasureError {
   if max_output_bytes < 0 || max_output_bytes > 268_435_456 {
     raise InvalidConfiguration("output byte budget must be <= 256 MiB")
@@ -100,7 +100,7 @@ pub fn encode_object(
 pub fn recover_object(
   manifest : Manifest,
   frames : Array[ShardEnvelope],
-  max_encoded_bytes? : Int = 16_777_216,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> ObjectRecovery raise ErasureError {
   let codec = Codec::new(
     manifest.data_count(),

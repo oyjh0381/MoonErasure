@@ -5,9 +5,9 @@
 pub fn recover_object_range(
   manifest : Manifest,
   frames : Array[ShardEnvelope],
-  start : Int,
-  length : Int,
-  max_encoded_bytes? : Int = 16_777_216,
+  start : Int32,
+  length : Int32,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> Bytes raise ErasureError {
   if start < 0 ||
     length < 0 ||

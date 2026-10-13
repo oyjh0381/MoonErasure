@@ -2,19 +2,19 @@
 /// A systematic GF(256) codec. The first `data_count` shards are unchanged data;
 /// the following `parity_count` shards are computed redundancy.
 pub struct Codec {
-  data_count : Int
-  parity_count : Int
-  max_encoded_bytes : Int
+  data_count : Int32
+  parity_count : Int32
+  max_encoded_bytes : Int32
   generator : Matrix
   field : Field
 }
 
 ///|
 fn validated_max_shard_bytes(
-  data_count : Int,
-  parity_count : Int,
-  max_encoded_bytes : Int,
-) -> Int raise ErasureError {
+  data_count : Int32,
+  parity_count : Int32,
+  max_encoded_bytes : Int32,
+) -> Int32 raise ErasureError {
   if data_count < 1 ||
     data_count > 255 ||
     parity_count < 1 ||
@@ -35,9 +35,9 @@ fn validated_max_shard_bytes(
 
 ///|
 pub fn Codec::new(
-  data_count : Int,
-  parity_count : Int,
-  max_encoded_bytes? : Int = 16_777_216,
+  data_count : Int32,
+  parity_count : Int32,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> Codec raise ErasureError {
   ignore(validated_max_shard_bytes(data_count, parity_count, max_encoded_bytes))
   let field = Field::new()
@@ -50,27 +50,27 @@ pub fn Codec::new(
 }
 
 ///|
-pub fn Codec::data_count(self : Codec) -> Int {
+pub fn Codec::data_count(self : Codec) -> Int32 {
   self.data_count
 }
 
 ///|
-pub fn Codec::parity_count(self : Codec) -> Int {
+pub fn Codec::parity_count(self : Codec) -> Int32 {
   self.parity_count
 }
 
 ///|
-pub fn Codec::total_count(self : Codec) -> Int {
+pub fn Codec::total_count(self : Codec) -> Int32 {
   self.data_count + self.parity_count
 }
 
 ///|
-pub fn Codec::max_shard_bytes(self : Codec) -> Int {
+pub fn Codec::max_shard_bytes(self : Codec) -> Int32 {
   self.max_encoded_bytes / self.total_count()
 }
 
 ///|
-fn Codec::check_length(self : Codec, length : Int) -> Unit raise ErasureError {
+fn Codec::check_length(self : Codec, length : Int32) -> Unit raise ErasureError {
   if length < 1 {
     raise EmptyShard
   }
@@ -83,7 +83,7 @@ fn Codec::check_length(self : Codec, length : Int) -> Unit raise ErasureError {
 fn Codec::check_data(
   self : Codec,
   data : Array[Bytes],
-) -> Int raise ErasureError {
+) -> Int32 raise ErasureError {
   if data.length() != self.data_count {
     raise InvalidShardCount(expected=self.data_count, actual=data.length())
   }

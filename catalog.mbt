@@ -4,7 +4,7 @@
 pub struct FrameCatalog {
   manifest : Manifest
   slots : Array[ShardEnvelope?]
-  mut stored_count : Int
+  mut stored_count : Int32
 }
 
 ///|
@@ -20,21 +20,21 @@ pub fn FrameCatalog::manifest(self : FrameCatalog) -> Manifest {
 }
 
 ///|
-pub fn FrameCatalog::stored_count(self : FrameCatalog) -> Int {
+pub fn FrameCatalog::stored_count(self : FrameCatalog) -> Int32 {
   self.stored_count
 }
 
 ///|
-pub fn FrameCatalog::capacity(self : FrameCatalog) -> Int {
+pub fn FrameCatalog::capacity(self : FrameCatalog) -> Int32 {
   self.slots.length()
 }
 
 ///|
 fn FrameCatalog::slot_index(
   self : FrameCatalog,
-  stripe_index : Int,
-  shard_index : Int,
-) -> Int raise ErasureError {
+  stripe_index : Int32,
+  shard_index : Int32,
+) -> Int32 raise ErasureError {
   if stripe_index < 0 || stripe_index >= self.manifest.stripe_count() {
     raise InvalidIndex(stripe_index)
   }
@@ -73,8 +73,8 @@ pub fn FrameCatalog::add(
 /// Look up one slot. A missing slot is returned as None.
 pub fn FrameCatalog::get(
   self : FrameCatalog,
-  stripe_index : Int,
-  shard_index : Int,
+  stripe_index : Int32,
+  shard_index : Int32,
 ) -> ShardEnvelope? raise ErasureError {
   self.slots[self.slot_index(stripe_index, shard_index)]
 }
@@ -84,8 +84,8 @@ pub fn FrameCatalog::get(
 /// can no longer be trusted. Removing an absent slot is a harmless no-op.
 pub fn FrameCatalog::invalidate(
   self : FrameCatalog,
-  stripe_index : Int,
-  shard_index : Int,
+  stripe_index : Int32,
+  shard_index : Int32,
 ) -> Bool raise ErasureError {
   let slot = self.slot_index(stripe_index, shard_index)
   if self.slots[slot] is None {
@@ -102,7 +102,7 @@ pub fn FrameCatalog::invalidate(
 pub fn FrameCatalog::add_bytes(
   self : FrameCatalog,
   wire : Bytes,
-  max_encoded_bytes? : Int = 16_777_216,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> Unit raise ErasureError {
   let frame = ShardEnvelope::from_bytes(wire, max_encoded_bytes~)
   self.add(frame)
@@ -112,7 +112,7 @@ pub fn FrameCatalog::add_bytes(
 /// Return present frames of a stripe in canonical shard index order.
 pub fn FrameCatalog::stripe_frames(
   self : FrameCatalog,
-  stripe_index : Int,
+  stripe_index : Int32,
 ) -> Array[ShardEnvelope] raise ErasureError {
   let width = self.manifest.data_count() + self.manifest.parity_count()
   ignore(self.slot_index(stripe_index, 0))
@@ -130,11 +130,11 @@ pub fn FrameCatalog::stripe_frames(
 /// Return the missing shard indices of a stripe in ascending order.
 pub fn FrameCatalog::missing_indices(
   self : FrameCatalog,
-  stripe_index : Int,
-) -> Array[Int] raise ErasureError {
+  stripe_index : Int32,
+) -> Array[Int32] raise ErasureError {
   let width = self.manifest.data_count() + self.manifest.parity_count()
   ignore(self.slot_index(stripe_index, 0))
-  let missing : Array[Int] = []
+  let missing : Array[Int32] = []
   for index = 0; index < width; index = index + 1 {
     if self.slots[stripe_index * width + index] is None {
       missing.push(index)
@@ -146,7 +146,7 @@ pub fn FrameCatalog::missing_indices(
 ///|
 pub fn FrameCatalog::stripe_recoverable(
   self : FrameCatalog,
-  stripe_index : Int,
+  stripe_index : Int32,
 ) -> Bool raise ErasureError {
   let width = self.manifest.data_count() + self.manifest.parity_count()
   let missing = self.missing_indices(stripe_index)
@@ -158,8 +158,8 @@ pub fn FrameCatalog::stripe_recoverable(
 /// `recover_stripe`, since catalog admission validates metadata only.
 pub fn FrameCatalog::recover_stripe(
   self : FrameCatalog,
-  stripe_index : Int,
-  max_encoded_bytes? : Int = 16_777_216,
+  stripe_index : Int32,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> StripeRecovery raise ErasureError {
   let codec = Codec::new(
     self.manifest.data_count(),
@@ -188,9 +188,9 @@ pub fn FrameCatalog::recover_stripe(
 /// stored fragments but needs a small portion of the original object.
 pub fn FrameCatalog::recover_range(
   self : FrameCatalog,
-  start : Int,
-  length : Int,
-  max_encoded_bytes? : Int = 16_777_216,
+  start : Int32,
+  length : Int32,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> Bytes raise ErasureError {
   if start < 0 ||
     length < 0 ||

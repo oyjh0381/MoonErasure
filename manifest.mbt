@@ -1,23 +1,23 @@
 ///|
 /// Bounded description of an ordered sequence of independently coded stripes.
 pub struct Manifest {
-  set_id : Int
-  data_count : Int
-  parity_count : Int
-  stripe_payload_limit : Int
-  stripe_count : Int
-  total_length : Int
+  set_id : Int32
+  data_count : Int32
+  parity_count : Int32
+  stripe_payload_limit : Int32
+  stripe_count : Int32
+  total_length : Int32
 }
 
 ///|
 fn checked_manifest(
-  set_id : Int,
-  data_count : Int,
-  parity_count : Int,
-  stripe_payload_limit : Int,
-  total_length : Int,
-  max_object_bytes : Int,
-  max_encoded_bytes : Int,
+  set_id : Int32,
+  data_count : Int32,
+  parity_count : Int32,
+  stripe_payload_limit : Int32,
+  total_length : Int32,
+  max_object_bytes : Int32,
+  max_encoded_bytes : Int32,
 ) -> Manifest raise ErasureError {
   let max_shard_bytes = validated_max_shard_bytes(
     data_count, parity_count, max_encoded_bytes,
@@ -55,10 +55,10 @@ fn checked_manifest(
 ///|
 pub fn Manifest::new(
   codec : Codec,
-  set_id : Int,
-  stripe_payload_limit : Int,
-  total_length : Int,
-  max_object_bytes? : Int = 67_108_864,
+  set_id : Int32,
+  stripe_payload_limit : Int32,
+  total_length : Int32,
+  max_object_bytes~ : Int32 = 67_108_864,
 ) -> Manifest raise ErasureError {
   checked_manifest(
     set_id,
@@ -72,40 +72,40 @@ pub fn Manifest::new(
 }
 
 ///|
-pub fn Manifest::set_id(self : Manifest) -> Int {
+pub fn Manifest::set_id(self : Manifest) -> Int32 {
   self.set_id
 }
 
 ///|
-pub fn Manifest::data_count(self : Manifest) -> Int {
+pub fn Manifest::data_count(self : Manifest) -> Int32 {
   self.data_count
 }
 
 ///|
-pub fn Manifest::parity_count(self : Manifest) -> Int {
+pub fn Manifest::parity_count(self : Manifest) -> Int32 {
   self.parity_count
 }
 
 ///|
-pub fn Manifest::stripe_count(self : Manifest) -> Int {
+pub fn Manifest::stripe_count(self : Manifest) -> Int32 {
   self.stripe_count
 }
 
 ///|
-pub fn Manifest::total_length(self : Manifest) -> Int {
+pub fn Manifest::total_length(self : Manifest) -> Int32 {
   self.total_length
 }
 
 ///|
-pub fn Manifest::stripe_payload_limit(self : Manifest) -> Int {
+pub fn Manifest::stripe_payload_limit(self : Manifest) -> Int32 {
   self.stripe_payload_limit
 }
 
 ///|
 pub fn Manifest::stripe_length(
   self : Manifest,
-  index : Int,
-) -> Int raise ErasureError {
+  index : Int32,
+) -> Int32 raise ErasureError {
   if index < 0 || index >= self.stripe_count {
     raise InvalidIndex(index)
   }
@@ -135,8 +135,8 @@ pub fn Manifest::to_bytes(self : Manifest) -> Bytes {
 ///|
 pub fn Manifest::from_bytes(
   input : Bytes,
-  max_object_bytes? : Int = 67_108_864,
-  max_encoded_bytes? : Int = 16_777_216,
+  max_object_bytes~ : Int32 = 67_108_864,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> Manifest raise ErasureError {
   if input.length() != 32 {
     raise InvalidManifest("manifest must be exactly 32 bytes")

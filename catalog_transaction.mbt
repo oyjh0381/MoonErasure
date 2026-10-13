@@ -5,8 +5,8 @@
 pub fn FrameCatalog::add_many(
   self : FrameCatalog,
   frames : Array[ShardEnvelope],
-  max_frames? : Int = 4096,
-) -> Int raise ErasureError {
+  max_frames~ : Int32 = 4096,
+) -> Int32 raise ErasureError {
   if max_frames < 0 || frames.length() > max_frames {
     raise ResourceLimit("catalog batch frame count")
   }

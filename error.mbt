@@ -2,18 +2,18 @@
 /// Errors reported by configuration, coding, repair, or archive validation.
 pub(all) suberror ErasureError {
   InvalidConfiguration(String)
-  InvalidShardCount(expected~ : Int, actual~ : Int)
-  InvalidShardLength(index~ : Int, expected~ : Int, actual~ : Int)
+  InvalidShardCount(expected~ : Int32, actual~ : Int32)
+  InvalidShardLength(index~ : Int32, expected~ : Int32, actual~ : Int32)
   EmptyShard
-  NotEnoughShards(required~ : Int, available~ : Int)
+  NotEnoughShards(required~ : Int32, available~ : Int32)
   SingularMatrix
-  InvalidIndex(Int)
-  DuplicateIndex(Int)
-  InconsistentShard(Int)
+  InvalidIndex(Int32)
+  DuplicateIndex(Int32)
+  InconsistentShard(Int32)
   InvalidRange
   InvalidEnvelope(String)
-  UnsupportedVersion(Int)
-  ChecksumMismatch(Int)
+  UnsupportedVersion(Int32)
+  ChecksumMismatch(Int32)
   ResourceLimit(String)
   InvalidManifest(String)
 }

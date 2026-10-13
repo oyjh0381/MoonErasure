@@ -2,22 +2,22 @@
 /// A half-open byte range that has enough admitted frames to attempt recovery.
 /// Presence is not authentication or a new content checksum verification.
 pub struct RecoverableRange {
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
 }
 
 ///|
-pub fn RecoverableRange::start(self : RecoverableRange) -> Int {
+pub fn RecoverableRange::start(self : RecoverableRange) -> Int32 {
   self.start
 }
 
 ///|
-pub fn RecoverableRange::end(self : RecoverableRange) -> Int {
+pub fn RecoverableRange::end(self : RecoverableRange) -> Int32 {
   self.end
 }
 
 ///|
-pub fn RecoverableRange::length(self : RecoverableRange) -> Int {
+pub fn RecoverableRange::length(self : RecoverableRange) -> Int32 {
   self.end - self.start
 }
 
@@ -27,14 +27,14 @@ pub fn RecoverableRange::length(self : RecoverableRange) -> Int {
 /// decoding the object. A result budget is checked before every emitted run.
 pub fn FrameCatalog::recoverable_ranges(
   self : FrameCatalog,
-  max_ranges? : Int = 4096,
+  max_ranges~ : Int32 = 4096,
 ) -> Array[RecoverableRange] raise ErasureError {
   if max_ranges < 0 {
     raise ResourceLimit("recoverable range count")
   }
   let width = self.manifest.data_count() + self.manifest.parity_count()
   let result : Array[RecoverableRange] = []
-  let mut run_start : Int? = None
+  let mut run_start : Int32? = None
   for stripe = 0; stripe < self.manifest.stripe_count(); stripe = stripe + 1 {
     let mut present = 0
     for shard = 0; shard < width; shard = shard + 1 {

@@ -5,15 +5,15 @@
 pub struct ObjectDecoder {
   codec : Codec
   manifest : Manifest
-  mut next_stripe : Int
-  mut decoded_bytes : Int
-  mut repaired_shards : Int
+  mut next_stripe : Int32
+  mut decoded_bytes : Int32
+  mut repaired_shards : Int32
 }
 
 ///|
 pub fn ObjectDecoder::new(
   manifest : Manifest,
-  max_encoded_bytes? : Int = 16_777_216,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> ObjectDecoder raise ErasureError {
   let codec = Codec::new(
     manifest.data_count(),
@@ -28,17 +28,17 @@ pub fn ObjectDecoder::new(
 }
 
 ///|
-pub fn ObjectDecoder::next_stripe(self : ObjectDecoder) -> Int {
+pub fn ObjectDecoder::next_stripe(self : ObjectDecoder) -> Int32 {
   self.next_stripe
 }
 
 ///|
-pub fn ObjectDecoder::decoded_bytes(self : ObjectDecoder) -> Int {
+pub fn ObjectDecoder::decoded_bytes(self : ObjectDecoder) -> Int32 {
   self.decoded_bytes
 }
 
 ///|
-pub fn ObjectDecoder::repaired_shards(self : ObjectDecoder) -> Int {
+pub fn ObjectDecoder::repaired_shards(self : ObjectDecoder) -> Int32 {
   self.repaired_shards
 }
 
@@ -72,7 +72,7 @@ pub fn ObjectDecoder::push_stripe(
 ///|
 /// Confirm that every stripe was consumed and the advertised byte count
 /// matches. There is no hidden payload buffer in this decoder.
-pub fn ObjectDecoder::finish(self : ObjectDecoder) -> Int raise ErasureError {
+pub fn ObjectDecoder::finish(self : ObjectDecoder) -> Int32 raise ErasureError {
   if self.next_stripe != self.manifest.stripe_count() ||
     self.decoded_bytes != self.manifest.total_length() {
     raise InvalidManifest("decoder ended before final stripe")

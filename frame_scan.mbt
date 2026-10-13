@@ -2,12 +2,12 @@
 /// A rejected input frame is identified by its position in the input list.
 /// The shard index inside a damaged header is deliberately not trusted.
 pub struct FrameIssue {
-  source_position : Int
+  source_position : Int32
   code : String
 }
 
 ///|
-pub fn FrameIssue::source_position(self : FrameIssue) -> Int {
+pub fn FrameIssue::source_position(self : FrameIssue) -> Int32 {
   self.source_position
 }
 
@@ -41,12 +41,12 @@ pub fn FrameScan::issues(self : FrameScan) -> Array[FrameIssue] {
 }
 
 ///|
-pub fn FrameScan::valid_count(self : FrameScan) -> Int {
+pub fn FrameScan::valid_count(self : FrameScan) -> Int32 {
   self.valid.length()
 }
 
 ///|
-pub fn FrameScan::rejected_count(self : FrameScan) -> Int {
+pub fn FrameScan::rejected_count(self : FrameScan) -> Int32 {
   self.issues.length()
 }
 
@@ -55,9 +55,9 @@ pub fn FrameScan::rejected_count(self : FrameScan) -> Int {
 /// still validate stripe identity and duplicates when using the valid frames.
 pub fn scan_frames(
   inputs : Array[Bytes],
-  max_frames? : Int = 4096,
-  max_encoded_bytes? : Int = 16_777_216,
-  max_total_bytes? : Int = 134_217_728,
+  max_frames~ : Int32 = 4096,
+  max_encoded_bytes~ : Int32 = 16_777_216,
+  max_total_bytes~ : Int32 = 134_217_728,
 ) -> FrameScan raise ErasureError {
   if max_frames < 0 || max_frames > 1_048_576 || inputs.length() > max_frames {
     raise ResourceLimit("frame count exceeds scanner limit")
@@ -118,8 +118,8 @@ pub fn ScannedRecovery::issues(self : ScannedRecovery) -> Array[FrameIssue] {
 pub fn recover_serialized_stripe(
   codec : Codec,
   inputs : Array[Bytes],
-  set_id : Int,
-  stripe_index : Int,
+  set_id : Int32,
+  stripe_index : Int32,
 ) -> ScannedRecovery raise ErasureError {
   let scan = scan_frames(
     inputs,

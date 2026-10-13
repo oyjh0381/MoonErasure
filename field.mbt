@@ -2,8 +2,8 @@
 /// GF(2^8) with irreducible polynomial 0x11d and generator 2.
 /// Keeping tables inside a codec avoids mutable global state across backends.
 pub struct Field {
-  exp : Array[Int]
-  log : Array[Int]
+  exp : Array[Int32]
+  log : Array[Int32]
 }
 
 ///|
@@ -26,7 +26,7 @@ fn Field::new() -> Field {
 }
 
 ///|
-fn Field::multiply(self : Field, left : Int, right : Int) -> Int {
+fn Field::multiply(self : Field, left : Int32, right : Int32) -> Int32 {
   if left == 0 || right == 0 {
     0
   } else {
@@ -35,7 +35,7 @@ fn Field::multiply(self : Field, left : Int, right : Int) -> Int {
 }
 
 ///|
-fn Field::inverse(self : Field, value : Int) -> Int raise ErasureError {
+fn Field::inverse(self : Field, value : Int32) -> Int32 raise ErasureError {
   if value == 0 {
     raise SingularMatrix
   }
@@ -43,7 +43,7 @@ fn Field::inverse(self : Field, value : Int) -> Int raise ErasureError {
 }
 
 ///|
-fn Field::power(self : Field, value : Int, exponent : Int) -> Int {
+fn Field::power(self : Field, value : Int32, exponent : Int32) -> Int32 {
   if exponent == 0 {
     return 1
   }

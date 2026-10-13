@@ -1,6 +1,6 @@
 ///|
 struct DecoderEntry {
-  selected_indices : Array[Int]
+  selected_indices : Array[Int32]
   inverse : Matrix
 }
 
@@ -11,16 +11,16 @@ struct DecoderEntry {
 pub struct RecoverySession {
   codec : Codec
   entries : Array[DecoderEntry]
-  capacity : Int
-  mut next_evict : Int
-  mut hits : Int
-  mut misses : Int
+  capacity : Int32
+  mut next_evict : Int32
+  mut hits : Int32
+  mut misses : Int32
 }
 
 ///|
 pub fn RecoverySession::new(
   codec : Codec,
-  max_patterns? : Int = 16,
+  max_patterns~ : Int32 = 16,
 ) -> RecoverySession raise ErasureError {
   if max_patterns < 1 || max_patterns > 64 {
     raise InvalidConfiguration("recovery cache must hold 1..64 patterns")
@@ -36,22 +36,22 @@ pub fn RecoverySession::new(
 }
 
 ///|
-pub fn RecoverySession::cache_size(self : RecoverySession) -> Int {
+pub fn RecoverySession::cache_size(self : RecoverySession) -> Int32 {
   self.entries.length()
 }
 
 ///|
-pub fn RecoverySession::cache_hits(self : RecoverySession) -> Int {
+pub fn RecoverySession::cache_hits(self : RecoverySession) -> Int32 {
   self.hits
 }
 
 ///|
-pub fn RecoverySession::cache_misses(self : RecoverySession) -> Int {
+pub fn RecoverySession::cache_misses(self : RecoverySession) -> Int32 {
   self.misses
 }
 
 ///|
-fn same_indices(left : Array[Int], right : Array[Int]) -> Bool {
+fn same_indices(left : Array[Int32], right : Array[Int32]) -> Bool {
   if left.length() != right.length() {
     return false
   }

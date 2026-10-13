@@ -3,24 +3,24 @@
 /// frames are returned from `push` and are not retained by the parser.
 pub struct BundleStream {
   mut pending : Array[Byte]
-  mut cursor : Int
-  mut stage : Int
-  mut expected_frames : Int
-  mut parsed_frames : Int
-  mut next_frame_length : Int
+  mut cursor : Int32
+  mut stage : Int32
+  mut expected_frames : Int32
+  mut parsed_frames : Int32
+  mut next_frame_length : Int32
   mut manifest : Manifest?
   mut seen : Array[Bool]
-  mut received_bytes : Int
-  max_input_bytes : Int
-  max_object_bytes : Int
-  max_encoded_bytes : Int
+  mut received_bytes : Int32
+  max_input_bytes : Int32
+  max_object_bytes : Int32
+  max_encoded_bytes : Int32
 }
 
 ///|
 pub fn BundleStream::new(
-  max_input_bytes? : Int = 134_217_728,
-  max_object_bytes? : Int = 67_108_864,
-  max_encoded_bytes? : Int = 16_777_216,
+  max_input_bytes~ : Int32 = 134_217_728,
+  max_object_bytes~ : Int32 = 67_108_864,
+  max_encoded_bytes~ : Int32 = 16_777_216,
 ) -> BundleStream raise ErasureError {
   if max_input_bytes < 56 || max_input_bytes > 268_435_456 {
     raise InvalidConfiguration(
@@ -55,17 +55,17 @@ pub fn BundleStream::manifest(self : BundleStream) -> Manifest? {
 }
 
 ///|
-pub fn BundleStream::parsed_frame_count(self : BundleStream) -> Int {
+pub fn BundleStream::parsed_frame_count(self : BundleStream) -> Int32 {
   self.parsed_frames
 }
 
 ///|
-pub fn BundleStream::buffered_bytes(self : BundleStream) -> Int {
+pub fn BundleStream::buffered_bytes(self : BundleStream) -> Int32 {
   self.pending.length() - self.cursor
 }
 
 ///|
-fn BundleStream::consume_prefix(self : BundleStream, length : Int) -> Bytes {
+fn BundleStream::consume_prefix(self : BundleStream, length : Int32) -> Bytes {
   let prefix = Bytes::from_array(
     self.pending[self.cursor:self.cursor + length].to_owned(),
   )

@@ -29,10 +29,10 @@ pub fn ScannedRangeRecovery::issues(
 pub fn recover_serialized_range(
   manifest : Manifest,
   inputs : Array[Bytes],
-  start : Int,
-  length : Int,
-  max_encoded_bytes? : Int = 16_777_216,
-  max_total_bytes? : Int = 134_217_728,
+  start : Int32,
+  length : Int32,
+  max_encoded_bytes~ : Int32 = 16_777_216,
+  max_total_bytes~ : Int32 = 134_217_728,
 ) -> ScannedRangeRecovery raise ErasureError {
   if start < 0 ||
     length < 0 ||
