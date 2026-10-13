@@ -93,8 +93,16 @@ pub fn Codec::new(Int, Int, max_encoded_bytes? : Int) -> Self raise ErasureError
 pub fn Codec::parity_count(Self) -> Int
 pub fn Codec::plan(Self, Array[Bool]) -> RepairPlan raise ErasureError
 pub fn Codec::reconstruct(Self, Array[Bytes?]) -> Array[Bytes] raise ErasureError
+pub fn Codec::reconstruct_selected(Self, Array[Bytes?], Array[Int]) -> Array[Bytes] raise ErasureError
 pub fn Codec::total_count(Self) -> Int
+pub fn Codec::update_parity(Self, Array[Bytes], Array[DataShardUpdate]) -> Array[Bytes] raise ErasureError
 pub fn Codec::verify(Self, Array[Bytes]) -> Bool raise ErasureError
+
+pub(all) struct DataShardUpdate {
+  index : Int
+  old_data : Bytes
+  new_data : Bytes
+}
 
 type DecoderEntry
 
