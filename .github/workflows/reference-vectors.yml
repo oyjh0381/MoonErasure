@@ -1,0 +1,36 @@
+name: Generate reference vectors
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - tools/reference/**
+      - .github/workflows/reference-vectors.yml
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: tools/reference/go.mod
+          cache: false
+      - name: Generate with pinned reference implementation
+        working-directory: tools/reference
+        run: |
+          go mod tidy
+          gofmt -w main.go
+          go run . > reference-vectors.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reedsolomon-v1.14.2-vectors
+          path: |
+            tools/reference/reference-vectors.json
+            tools/reference/go.mod
+            tools/reference/go.sum
+            tools/reference/main.go
+          if-no-files-found: error
