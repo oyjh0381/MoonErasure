@@ -171,3 +171,16 @@ test "empty selection and unrecoverable selection have distinct contracts" {
   }
   assert_true(empty)
 }
+
+///|
+test "selected recovery supports the 256-slot boundary" {
+  let codec = try! @moonerasure.Codec::new(1, 255, max_encoded_bytes=512)
+  let all = try! codec.encode_all([b"xy"])
+  let input : Array[Bytes?] = Array::make(256, None)
+  input[255] = Some(all[255])
+  assert_eq(try! codec.reconstruct_selected(input, [0, 254, 127]), [
+    all[0],
+    all[254],
+    all[127],
+  ])
+}

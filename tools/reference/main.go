@@ -18,16 +18,16 @@ type Change struct {
 }
 
 type Vector struct {
-	K       int      `json:"k"`
-	M       int      `json:"m"`
-	Length  int      `json:"length"`
-	Data    []string `json:"data_hex"`
-	Encoded []string `json:"encoded_hex"`
-	Missing []int    `json:"missing"`
-	Targets []int    `json:"targets"`
+	K        int      `json:"k"`
+	M        int      `json:"m"`
+	Length   int      `json:"length"`
+	Data     []string `json:"data_hex"`
+	Encoded  []string `json:"encoded_hex"`
+	Missing  []int    `json:"missing"`
+	Targets  []int    `json:"targets"`
 	Selected []string `json:"selected_hex"`
-	Changes []Change `json:"changes"`
-	Parity  []string `json:"updated_parity_hex"`
+	Changes  []Change `json:"changes"`
+	Parity   []string `json:"updated_parity_hex"`
 }
 
 func require(err error) {
@@ -77,13 +77,13 @@ func main() {
 				shards[i] = make([]byte, length)
 			}
 			require(enc.Encode(shards))
-			v := Vector{K:k, M:m, Length:length, Data:encodedHex(shards[:k]), Encoded:encodedHex(shards)}
+			v := Vector{K: k, M: m, Length: length, Data: encodedHex(shards[:k]), Encoded: encodedHex(shards)}
 			degraded := clone(shards)
 			v.Missing = []int{0}
 			v.Targets = []int{0}
 			if m > 1 {
 				v.Missing = append(v.Missing, k+m-1)
-				v.Targets = []int{k+m-1, 0}
+				v.Targets = []int{k + m - 1, 0}
 			}
 			for _, index := range v.Missing {
 				degraded[index] = nil
@@ -101,7 +101,7 @@ func main() {
 			}
 			updated := clone(shards)
 			newData := make([][]byte, k)
-			for _, index := range []int{0, k-1} {
+			for _, index := range []int{0, k - 1} {
 				if newData[index] != nil {
 					continue
 				}
@@ -117,15 +117,17 @@ func main() {
 			}
 			ok, err := enc.Verify(updated)
 			require(err)
-			if !ok { panic(fmt.Sprintf("reference update failed: %d+%d/%d", k,m,length)) }
+			if !ok {
+				panic(fmt.Sprintf("reference update failed: %d+%d/%d", k, m, length))
+			}
 			v.Parity = encodedHex(updated[k:])
 			vectors = append(vectors, v)
 		}
 	}
 	output := struct {
-		Reference string `json:"reference"`
-		Options string `json:"options"`
-		Vectors []Vector `json:"vectors"`
+		Reference string   `json:"reference"`
+		Options   string   `json:"options"`
+		Vectors   []Vector `json:"vectors"`
 	}{"github.com/klauspost/reedsolomon@v1.14.2", "default Vandermonde, WithLeopardGF(false)", vectors}
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetIndent("", "  ")

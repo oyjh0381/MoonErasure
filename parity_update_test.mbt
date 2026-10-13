@@ -168,3 +168,30 @@ test "delta update respects shard resource limits and rejects empty parity" {
   }
   assert_true(empty)
 }
+
+///|
+test "delta update supports 255 parity slots and larger practical blocks" {
+  let boundary = try! @moonerasure.Codec::new(1, 255, max_encoded_bytes=512)
+  let old_parity = try! boundary.encode([b"xy"])
+  assert_eq(
+    try! boundary.update_parity(old_parity, [
+      { index: 0, old_data: b"xy", new_data: b"zz", },
+    ]),
+    try! boundary.encode([b"zz"]),
+  )
+  let codec = try! @moonerasure.Codec::new(10, 4)
+  let data : Array[Bytes] = []
+  for index = 0; index < 10; index = index + 1 {
+    data.push(Bytes::from_array(Array::make(8192, (index * 19).to_byte())))
+  }
+  let replacement = Bytes::from_array(Array::make(8192, b'\xff'))
+  let old_parity = try! codec.encode(data)
+  let next = data.copy()
+  next[9] = replacement
+  assert_eq(
+    try! codec.update_parity(old_parity, [
+      { index: 9, old_data: data[9], new_data: replacement, },
+    ]),
+    try! codec.encode(next),
+  )
+}
