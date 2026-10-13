@@ -6,4 +6,6 @@ Tests are split into public black-box tests (`*_test.mbt`) and white-box arithme
 
 The exhaustive small-dimension tests verify the MDS recovery contract across many independent shard positions rather than a single happy path. They are deterministic and fast enough for CI. They do not prove resistance to maliciously crafted frames or characterize performance at maximum `k=255`; both remain outside the guarantee.
 
+Selective recovery additionally tests every sufficient subset for `k=1..4,m=1..3`, individual data/parity targets, output ordering, malformed selections, budget exhaustion, and inconsistent surplus evidence. Delta updates compare every changed subset for `k=1..5,m=1..3` with full encoding, test composition and reversal, and reject invalid lengths, duplicate indices, empty parity and oversized values without modifying inputs. [Pinned reference tests](REFERENCE_COMPARISON.md) independently compare encoding, recovery and updates with Go v1.14.2; generated vectors do not count as handwritten LOC.
+
 When a regression is found, add a minimal test for the boundary that failed, fix it, and rerun at least the affected backend plus the full all-backend suite before release. For large data workloads, compare memory use and throughput on the intended backend; the code's 256 MiB per-operation input cap is not a process-wide memory cap.

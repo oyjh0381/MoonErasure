@@ -10,6 +10,7 @@ target
 /research/
 /.private/
 /.local/
+/docs/RELEASE_*.md
 /docs/*REVIEW*.md
 /docs/*review*.md
 /docs/*RESEARCH*.md
@@ -21,6 +22,12 @@ target
 /docs/design-tree.md
 /docs/VERIFICATION.md
 /*申报书*.md
+**/*申报书*.pdf
+**/*申报书*.docx
+**/*复审补充*.md
+**/*审查报告*.pdf
+**/*验收报告*.pdf
+**/*汇总报告*.md
 **/*选题*.md
 **/*排重*.md
 **/*审查报告*.md

@@ -1,5 +1,11 @@
 # MoonErasure
 
+**MoonBit 原生 Reed–Solomon 编码、选择性重建与增量更新库。**
+
+本库面向备份工具、对象存储适配器、块数据更新与分片传输服务，输入是等长数据片、已知丢失位置和更新前后字节，输出是校验片、指定重建片或更新后的校验片。核心计算不依赖 Go/JavaScript 运行时，支持 Native、JS、Wasm 和 Wasm-GC。
+
+功能范围以 [`klauspost/reedsolomon` v1.14.2 对照表](docs/REFERENCE_COMPARISON.md)说明；[三个可执行验证场景](docs/SCENARIOS.md)给出输入、断言及成本模型。参考库提供成熟算法功能基准，本库的实现、帧和对象格式独立编写。
+
 MoonErasure is a MoonBit library for systematic Reed–Solomon erasure coding over GF(256). It turns `k` data shards into `k + m` shards and reconstructs a stripe from **any `k` intact shards**. The first `k` shards retain the original padded data. Applications decide where to store, send, authenticate and persist the shards.
 
 The library supports complete objects, bounded stripes, independent checksum-protected frames, repair plans, range reads, incremental encoding and decoding, a portable single-file bundle format, and health inspection. The code is original MoonBit and runs on `wasm`, `wasm-gc`, `js` and `native` targets.
@@ -13,7 +19,7 @@ MoonBit applications that distribute backups or packets need a reusable redundan
 Install the [MoonBit toolchain](https://docs.moonbitlang.com/en/latest/toolchain/), then add the published library:
 
 ```sh
-moon add oyjh0381/moonerasure@0.1.0
+moon add oyjh0381/moonerasure@0.2.0
 ```
 
 Import the library in your application's `moon.pkg`:
@@ -37,7 +43,30 @@ moon test --target all --deny-warn
 moon run cmd/main --target wasm-gc
 ```
 
-The Mooncakes module name is `oyjh0381/moonerasure`. No third-party runtime packages are required. Release and verification evidence is recorded in [the 0.1.0 release record](docs/RELEASE_0.1.0.md).
+The Mooncakes module name is `oyjh0381/moonerasure`. No third-party runtime packages are required. Development uses MoonBit compiler v0.10.15 or later. Version 0.1.0 does not include the selective-recovery or delta-update methods added in 0.2.0.
+
+## Core operations and explicit inputs
+
+| Operation | Input | Output / contract |
+| --- | --- | --- |
+| `Codec::encode` / `encode_all` | `k` equal nonempty data shards | `m` parity shards / detached complete codeword |
+| `Codec::verify` | All `k+m` shards | Whether parity agrees with data; no corruption localization |
+| `Codec::reconstruct` | `k+m` optional slots, at least `k` known-intact | Complete codeword; surplus supplied shards cross-checked |
+| `Codec::reconstruct_selected` | Optional slots plus unique requested indices | Only requested data/parity, in request order; surplus cross-checked |
+| `Codec::update_parity` | Old parity and indexed old/new data pairs | Detached new parity; unchanged data shards are not supplied |
+| Object / catalog methods | Manifest and validated frames | Stripe/range recovery, repair frames, health and inventory |
+
+```moonbit
+// Missing slots remain None; only shard 1 is materialized in the result.
+let selected = try! codec.reconstruct_selected(surviving, [1])
+// Both old data and parity must belong to the same consistent generation.
+let changes : Array[@moonerasure.DataShardUpdate] = [
+  { index: 3, old_data: old_block, new_data: new_block },
+]
+let next_parity = try! codec.update_parity(old_parity, changes)
+```
+
+For executable definitions of these variables and assertions, run the examples below. Persist new data and returned parity as one generation in the host storage adapter; this library does not provide durable commit semantics. An empty selected request only validates input shapes, returns `[]`, and performs no codeword consistency check. A nonempty request requires at least `k` known-intact inputs, even when its requested shard is already present.
 
 ## Minimal library use
 
@@ -74,6 +103,9 @@ For long-lived storage inventories, `FrameCatalog::add_bytes` validates CRC befo
 | `moon run examples/range` | Recover a byte range by fetching only overlapping stripes. |
 | `moon run examples/stream` | Encode arbitrary input chunks and decode one stripe at a time. |
 | `moon run examples/maintenance` | Admit a frame batch atomically and plan reads over currently recoverable byte ranges. |
+| `moon run examples/degraded_read` | Read one missing 4 KiB data block from a 6+3 stripe without allocating unrelated missing shards. |
+| `moon run examples/incremental_update` | Update one 4 KiB block in a 10+4 stripe, compare parity with full encoding, then tolerate four erasures. |
+| `moon run examples/selective_repair` | Rebuild and replace only three failed backup placements, then verify the complete codeword. |
 | `moon run examples/benchmark --target native` | Verified fixed workload for local timing of repeated loss patterns. |
 
 All examples exit with a failing assertion if the round trip is wrong. [API guide](docs/API.md) explains each public workflow; [wire format](docs/WIRE_FORMAT.md) records byte layouts and compatibility rules.
@@ -90,6 +122,8 @@ See [performance notes](docs/PERFORMANCE.md) for complexity and reproducible tim
 ## Verification
 
 The repository includes black-box and white-box tests for GF arithmetic, matrix inversion, known vectors, exhaustive small erasure combinations, envelopes, bounds, corrupted bytes, multi-stripe objects, bundle parsing, incremental chunk boundaries, range reads, repair and health. CI checks/builds/tests all four backends, runs every example, and checks formatting and public interfaces. See [testing notes](docs/TESTING.md).
+
+Pinned Go reference vectors cover encoding, full reconstruction, requested reconstruction and parity updates under the same GF(256) Vandermonde matrix. Ordinary `moon test` uses committed vectors and requires no Go installation. CI additionally regenerates them using the pinned Go module and checks for drift; the setup and reproduction commands are in the comparison document. This establishes agreement on the tested configurations, not universal interoperability with every matrix or Leopard mode.
 
 ## Design and license
 

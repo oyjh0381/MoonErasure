@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 — 2026-10-13
+
+- Add `Codec::reconstruct_selected` for detached requested data/parity outputs, preserving checks against surplus inputs without generating unrelated erased rows.
+- Add `DataShardUpdate` and `Codec::update_parity` for consistent-generation delta updates that do not read unchanged data shards or mutate input parity.
+- Add exhaustive selection/update regressions, pinned Go v1.14.2 behavioral vectors, and executable degraded-read, block-update and targeted-repair workflows.
+- Document operation inputs/outputs, mature-library scope comparisons, algorithmic trade-offs and host persistence requirements; adopt MoonBit v0.10.15 formatting.
+
 ## 0.1.0 — 2026-10-03
 
 - Implemented systematic GF(256) Reed–Solomon coding with any-`k` erasure recovery, parity verification, repair planning and a bounded matrix cache for repeated loss patterns.

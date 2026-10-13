@@ -1,6 +1,6 @@
 name = "oyjh0381/moonerasure"
 
-version = "0.1.0"
+version = "0.2.0"
 
 readme = "README.md"
 
@@ -12,4 +12,4 @@ keywords = [ "erasure", "reed-solomon", "storage", "recovery", "gf256" ]
 
 preferred_target = "wasm-gc"
 
-description = "Portable Reed-Solomon shard recovery and integrity envelopes"
+description = "Reed-Solomon encoding, selective recovery and incremental parity updates"
