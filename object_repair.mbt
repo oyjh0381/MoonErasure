@@ -2,7 +2,7 @@
 /// Replacement frames for missing slots, in stripe then shard order.
 /// The caller decides where to persist them. Existing frames are never rewritten.
 pub struct ObjectRepair {
-  replacements : Array[ShardEnvelope]
+  priv replacements : Array[ShardEnvelope]
   repaired_stripes : Int32
 }
 

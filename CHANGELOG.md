@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — 2026-10-20
+
+- 字节区间校验更新；增加公开接口测试及可运行场景。
+- 适配 MoonBit 0.10.16、显式容器封装与 Windows argv 路径；内部字段直接访问需迁移到公开方法。
+
 ## 0.2.0 — 2026-10-13
 
 - Add `Codec::reconstruct_selected` for detached requested data/parity outputs, preserving checks against surplus inputs without generating unrelated erased rows.

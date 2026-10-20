@@ -2,55 +2,55 @@
 package "oyjh0381/moonerasure"
 
 // Values
-pub fn crc32c(Bytes) -> UInt
+pub fn crc32c(Bytes) -> UInt32
 
-pub fn encode_object(Codec, Bytes, Int, stripe_payload_limit? : Int, max_object_bytes? : Int, max_output_bytes? : Int) -> EncodedObject raise ErasureError
+pub fn encode_object(Codec, Bytes, Int32, stripe_payload_limit? : Int32, max_object_bytes? : Int32, max_output_bytes? : Int32) -> EncodedObject raise ErasureError
 
-pub fn encode_stripe(Codec, Bytes, Int, Int) -> Array[ShardEnvelope] raise ErasureError
+pub fn encode_stripe(Codec, Bytes, Int32, Int32) -> Array[ShardEnvelope] raise ErasureError
 
-pub fn export_bundle(EncodedObject, max_output_bytes? : Int) -> Bytes raise ErasureError
+pub fn export_bundle(EncodedObject, max_output_bytes? : Int32) -> Bytes raise ErasureError
 
-pub fn import_bundle(Bytes, max_input_bytes? : Int, max_object_bytes? : Int, max_encoded_bytes? : Int) -> EncodedObject raise ErasureError
+pub fn import_bundle(Bytes, max_input_bytes? : Int32, max_object_bytes? : Int32, max_encoded_bytes? : Int32) -> EncodedObject raise ErasureError
 
-pub fn inspect_object(Manifest, Array[ShardEnvelope], max_encoded_bytes? : Int) -> ObjectHealth raise ErasureError
+pub fn inspect_object(Manifest, Array[ShardEnvelope], max_encoded_bytes? : Int32) -> ObjectHealth raise ErasureError
 
-pub fn inspect_serialized_object(Manifest, Array[Bytes], max_encoded_bytes? : Int, max_total_bytes? : Int) -> ScannedObjectHealth raise ErasureError
+pub fn inspect_serialized_object(Manifest, Array[Bytes], max_encoded_bytes? : Int32, max_total_bytes? : Int32) -> ScannedObjectHealth raise ErasureError
 
-pub fn inspect_stripe(Codec, Array[ShardEnvelope], Int, Int) -> StripeHealth
+pub fn inspect_stripe(Codec, Array[ShardEnvelope], Int32, Int32) -> StripeHealth
 
-pub fn recover_object(Manifest, Array[ShardEnvelope], max_encoded_bytes? : Int) -> ObjectRecovery raise ErasureError
+pub fn recover_object(Manifest, Array[ShardEnvelope], max_encoded_bytes? : Int32) -> ObjectRecovery raise ErasureError
 
-pub fn recover_object_range(Manifest, Array[ShardEnvelope], Int, Int, max_encoded_bytes? : Int) -> Bytes raise ErasureError
+pub fn recover_object_range(Manifest, Array[ShardEnvelope], Int32, Int32, max_encoded_bytes? : Int32) -> Bytes raise ErasureError
 
-pub fn recover_serialized_object(Manifest, Array[Bytes], max_encoded_bytes? : Int, max_total_bytes? : Int) -> ScannedObjectRecovery raise ErasureError
+pub fn recover_serialized_object(Manifest, Array[Bytes], max_encoded_bytes? : Int32, max_total_bytes? : Int32) -> ScannedObjectRecovery raise ErasureError
 
-pub fn recover_serialized_range(Manifest, Array[Bytes], Int, Int, max_encoded_bytes? : Int, max_total_bytes? : Int) -> ScannedRangeRecovery raise ErasureError
+pub fn recover_serialized_range(Manifest, Array[Bytes], Int32, Int32, max_encoded_bytes? : Int32, max_total_bytes? : Int32) -> ScannedRangeRecovery raise ErasureError
 
-pub fn recover_serialized_stripe(Codec, Array[Bytes], Int, Int) -> ScannedRecovery raise ErasureError
+pub fn recover_serialized_stripe(Codec, Array[Bytes], Int32, Int32) -> ScannedRecovery raise ErasureError
 
-pub fn recover_stripe(Codec, Array[ShardEnvelope], Int, Int) -> StripeRecovery raise ErasureError
+pub fn recover_stripe(Codec, Array[ShardEnvelope], Int32, Int32) -> StripeRecovery raise ErasureError
 
-pub fn repair_object(Manifest, Array[ShardEnvelope], max_encoded_bytes? : Int) -> ObjectRepair raise ErasureError
+pub fn repair_object(Manifest, Array[ShardEnvelope], max_encoded_bytes? : Int32) -> ObjectRepair raise ErasureError
 
-pub fn repair_serialized_object(Manifest, Array[Bytes], max_encoded_bytes? : Int, max_total_bytes? : Int) -> ScannedObjectRepair raise ErasureError
+pub fn repair_serialized_object(Manifest, Array[Bytes], max_encoded_bytes? : Int32, max_total_bytes? : Int32) -> ScannedObjectRepair raise ErasureError
 
-pub fn scan_frames(Array[Bytes], max_frames? : Int, max_encoded_bytes? : Int, max_total_bytes? : Int) -> FrameScan raise ErasureError
+pub fn scan_frames(Array[Bytes], max_frames? : Int32, max_encoded_bytes? : Int32, max_total_bytes? : Int32) -> FrameScan raise ErasureError
 
 // Errors
 pub(all) suberror ErasureError {
   InvalidConfiguration(String)
-  InvalidShardCount(expected~ : Int, actual~ : Int)
-  InvalidShardLength(index~ : Int, expected~ : Int, actual~ : Int)
+  InvalidShardCount(expected~ : Int32, actual~ : Int32)
+  InvalidShardLength(index~ : Int32, expected~ : Int32, actual~ : Int32)
   EmptyShard
-  NotEnoughShards(required~ : Int, available~ : Int)
+  NotEnoughShards(required~ : Int32, available~ : Int32)
   SingularMatrix
-  InvalidIndex(Int)
-  DuplicateIndex(Int)
-  InconsistentShard(Int)
+  InvalidIndex(Int32)
+  DuplicateIndex(Int32)
+  InconsistentShard(Int32)
   InvalidRange
   InvalidEnvelope(String)
-  UnsupportedVersion(Int)
-  ChecksumMismatch(Int)
+  UnsupportedVersion(Int32)
+  ChecksumMismatch(Int32)
   ResourceLimit(String)
   InvalidManifest(String)
 }
@@ -58,48 +58,55 @@ pub fn ErasureError::code(Self) -> String
 
 // Types and methods
 pub struct BundleStream {
-  mut pending : Array[Byte]
-  mut cursor : Int
-  mut stage : Int
-  mut expected_frames : Int
-  mut parsed_frames : Int
-  mut next_frame_length : Int
+  mut cursor : Int32
+  mut stage : Int32
+  mut expected_frames : Int32
+  mut parsed_frames : Int32
+  mut next_frame_length : Int32
   mut manifest : Manifest?
-  mut seen : Array[Bool]
-  mut received_bytes : Int
-  max_input_bytes : Int
-  max_object_bytes : Int
-  max_encoded_bytes : Int
+  mut received_bytes : Int32
+  max_input_bytes : Int32
+  max_object_bytes : Int32
+  max_encoded_bytes : Int32
+  // private fields
 }
-pub fn BundleStream::buffered_bytes(Self) -> Int
+pub fn BundleStream::buffered_bytes(Self) -> Int32
 pub fn BundleStream::finish(Self) -> Manifest raise ErasureError
 pub fn BundleStream::manifest(Self) -> Manifest?
-pub fn BundleStream::new(max_input_bytes? : Int, max_object_bytes? : Int, max_encoded_bytes? : Int) -> Self raise ErasureError
-pub fn BundleStream::parsed_frame_count(Self) -> Int
+pub fn BundleStream::new(max_input_bytes? : Int32, max_object_bytes? : Int32, max_encoded_bytes? : Int32) -> Self raise ErasureError
+pub fn BundleStream::parsed_frame_count(Self) -> Int32
 pub fn BundleStream::push(Self, Bytes) -> Array[ShardEnvelope] raise ErasureError
 
 pub struct Codec {
-  data_count : Int
-  parity_count : Int
-  max_encoded_bytes : Int
+  data_count : Int32
+  parity_count : Int32
+  max_encoded_bytes : Int32
   generator : Matrix
   field : Field
 }
-pub fn Codec::data_count(Self) -> Int
+pub fn Codec::data_count(Self) -> Int32
 pub fn Codec::encode(Self, Array[Bytes]) -> Array[Bytes] raise ErasureError
 pub fn Codec::encode_all(Self, Array[Bytes]) -> Array[Bytes] raise ErasureError
-pub fn Codec::max_shard_bytes(Self) -> Int
-pub fn Codec::new(Int, Int, max_encoded_bytes? : Int) -> Self raise ErasureError
-pub fn Codec::parity_count(Self) -> Int
+pub fn Codec::max_shard_bytes(Self) -> Int32
+pub fn Codec::new(Int32, Int32, max_encoded_bytes? : Int32) -> Self raise ErasureError
+pub fn Codec::parity_count(Self) -> Int32
 pub fn Codec::plan(Self, Array[Bool]) -> RepairPlan raise ErasureError
 pub fn Codec::reconstruct(Self, Array[Bytes?]) -> Array[Bytes] raise ErasureError
-pub fn Codec::reconstruct_selected(Self, Array[Bytes?], Array[Int]) -> Array[Bytes] raise ErasureError
-pub fn Codec::total_count(Self) -> Int
+pub fn Codec::reconstruct_selected(Self, Array[Bytes?], Array[Int32]) -> Array[Bytes] raise ErasureError
+pub fn Codec::total_count(Self) -> Int32
 pub fn Codec::update_parity(Self, Array[Bytes], Array[DataShardUpdate]) -> Array[Bytes] raise ErasureError
+pub fn Codec::update_parity_ranges(Self, Array[Bytes], Array[DataRangeUpdate], max_ranges? : Int32, max_changed_bytes? : Int32) -> Array[Bytes] raise ErasureError
 pub fn Codec::verify(Self, Array[Bytes]) -> Bool raise ErasureError
 
+pub(all) struct DataRangeUpdate {
+  index : Int32
+  offset : Int32
+  old_data : Bytes
+  new_data : Bytes
+}
+
 pub(all) struct DataShardUpdate {
-  index : Int
+  index : Int32
   old_data : Bytes
   new_data : Bytes
 }
@@ -108,254 +115,249 @@ type DecoderEntry
 
 pub struct EncodedObject {
   manifest : Manifest
-  frames : Array[ShardEnvelope]
+  // private fields
 }
-pub fn EncodedObject::frame_count(Self) -> Int
+pub fn EncodedObject::frame_count(Self) -> Int32
 pub fn EncodedObject::frames(Self) -> Array[ShardEnvelope]
 pub fn EncodedObject::manifest(Self) -> Manifest
 
 pub struct Field {
-  exp : Array[Int]
-  log : Array[Int]
+  // private fields
 }
 
 pub struct FrameCatalog {
   manifest : Manifest
-  slots : Array[ShardEnvelope?]
-  mut stored_count : Int
+  mut stored_count : Int32
+  // private fields
 }
 pub fn FrameCatalog::add(Self, ShardEnvelope) -> Unit raise ErasureError
-pub fn FrameCatalog::add_bytes(Self, Bytes, max_encoded_bytes? : Int) -> Unit raise ErasureError
-pub fn FrameCatalog::add_many(Self, Array[ShardEnvelope], max_frames? : Int) -> Int raise ErasureError
-pub fn FrameCatalog::capacity(Self) -> Int
-pub fn FrameCatalog::get(Self, Int, Int) -> ShardEnvelope? raise ErasureError
-pub fn FrameCatalog::invalidate(Self, Int, Int) -> Bool raise ErasureError
+pub fn FrameCatalog::add_bytes(Self, Bytes, max_encoded_bytes? : Int32) -> Unit raise ErasureError
+pub fn FrameCatalog::add_many(Self, Array[ShardEnvelope], max_frames? : Int32) -> Int32 raise ErasureError
+pub fn FrameCatalog::capacity(Self) -> Int32
+pub fn FrameCatalog::get(Self, Int32, Int32) -> ShardEnvelope? raise ErasureError
+pub fn FrameCatalog::invalidate(Self, Int32, Int32) -> Bool raise ErasureError
 pub fn FrameCatalog::manifest(Self) -> Manifest
-pub fn FrameCatalog::missing_indices(Self, Int) -> Array[Int] raise ErasureError
+pub fn FrameCatalog::missing_indices(Self, Int32) -> Array[Int32] raise ErasureError
 pub fn FrameCatalog::new(Manifest) -> Self
-pub fn FrameCatalog::recover_range(Self, Int, Int, max_encoded_bytes? : Int) -> Bytes raise ErasureError
-pub fn FrameCatalog::recover_stripe(Self, Int, max_encoded_bytes? : Int) -> StripeRecovery raise ErasureError
-pub fn FrameCatalog::recoverable_ranges(Self, max_ranges? : Int) -> Array[RecoverableRange] raise ErasureError
-pub fn FrameCatalog::stored_count(Self) -> Int
-pub fn FrameCatalog::stripe_frames(Self, Int) -> Array[ShardEnvelope] raise ErasureError
-pub fn FrameCatalog::stripe_recoverable(Self, Int) -> Bool raise ErasureError
+pub fn FrameCatalog::recover_range(Self, Int32, Int32, max_encoded_bytes? : Int32) -> Bytes raise ErasureError
+pub fn FrameCatalog::recover_stripe(Self, Int32, max_encoded_bytes? : Int32) -> StripeRecovery raise ErasureError
+pub fn FrameCatalog::recoverable_ranges(Self, max_ranges? : Int32) -> Array[RecoverableRange] raise ErasureError
+pub fn FrameCatalog::stored_count(Self) -> Int32
+pub fn FrameCatalog::stripe_frames(Self, Int32) -> Array[ShardEnvelope] raise ErasureError
+pub fn FrameCatalog::stripe_recoverable(Self, Int32) -> Bool raise ErasureError
 
 pub struct FrameIssue {
-  source_position : Int
+  source_position : Int32
   code : String
 }
 pub fn FrameIssue::code(Self) -> String
-pub fn FrameIssue::source_position(Self) -> Int
+pub fn FrameIssue::source_position(Self) -> Int32
 
 pub struct FrameScan {
-  valid : Array[ShardEnvelope]
-  issues : Array[FrameIssue]
+  // private fields
 }
 pub fn FrameScan::issues(Self) -> Array[FrameIssue]
-pub fn FrameScan::rejected_count(Self) -> Int
+pub fn FrameScan::rejected_count(Self) -> Int32
 pub fn FrameScan::valid(Self) -> Array[ShardEnvelope]
-pub fn FrameScan::valid_count(Self) -> Int
+pub fn FrameScan::valid_count(Self) -> Int32
 
 pub struct Manifest {
-  set_id : Int
-  data_count : Int
-  parity_count : Int
-  stripe_payload_limit : Int
-  stripe_count : Int
-  total_length : Int
+  set_id : Int32
+  data_count : Int32
+  parity_count : Int32
+  stripe_payload_limit : Int32
+  stripe_count : Int32
+  total_length : Int32
 }
-pub fn Manifest::data_count(Self) -> Int
-pub fn Manifest::from_bytes(Bytes, max_object_bytes? : Int, max_encoded_bytes? : Int) -> Self raise ErasureError
-pub fn Manifest::new(Codec, Int, Int, Int, max_object_bytes? : Int) -> Self raise ErasureError
-pub fn Manifest::parity_count(Self) -> Int
-pub fn Manifest::set_id(Self) -> Int
-pub fn Manifest::stripe_count(Self) -> Int
-pub fn Manifest::stripe_length(Self, Int) -> Int raise ErasureError
-pub fn Manifest::stripe_payload_limit(Self) -> Int
+pub fn Manifest::data_count(Self) -> Int32
+pub fn Manifest::from_bytes(Bytes, max_object_bytes? : Int32, max_encoded_bytes? : Int32) -> Self raise ErasureError
+pub fn Manifest::new(Codec, Int32, Int32, Int32, max_object_bytes? : Int32) -> Self raise ErasureError
+pub fn Manifest::parity_count(Self) -> Int32
+pub fn Manifest::set_id(Self) -> Int32
+pub fn Manifest::stripe_count(Self) -> Int32
+pub fn Manifest::stripe_length(Self, Int32) -> Int32 raise ErasureError
+pub fn Manifest::stripe_payload_limit(Self) -> Int32
 pub fn Manifest::to_bytes(Self) -> Bytes
-pub fn Manifest::total_length(Self) -> Int
+pub fn Manifest::total_length(Self) -> Int32
 
 pub struct Matrix {
-  rows : Int
-  cols : Int
-  cells : Array[Array[Int]]
+  rows : Int32
+  cols : Int32
+  // private fields
 }
 
 pub struct ObjectDecoder {
   codec : Codec
   manifest : Manifest
-  mut next_stripe : Int
-  mut decoded_bytes : Int
-  mut repaired_shards : Int
+  mut next_stripe : Int32
+  mut decoded_bytes : Int32
+  mut repaired_shards : Int32
 }
-pub fn ObjectDecoder::decoded_bytes(Self) -> Int
-pub fn ObjectDecoder::finish(Self) -> Int raise ErasureError
-pub fn ObjectDecoder::new(Manifest, max_encoded_bytes? : Int) -> Self raise ErasureError
-pub fn ObjectDecoder::next_stripe(Self) -> Int
+pub fn ObjectDecoder::decoded_bytes(Self) -> Int32
+pub fn ObjectDecoder::finish(Self) -> Int32 raise ErasureError
+pub fn ObjectDecoder::new(Manifest, max_encoded_bytes? : Int32) -> Self raise ErasureError
+pub fn ObjectDecoder::next_stripe(Self) -> Int32
 pub fn ObjectDecoder::push_stripe(Self, Array[ShardEnvelope]) -> Bytes raise ErasureError
-pub fn ObjectDecoder::repaired_shards(Self) -> Int
+pub fn ObjectDecoder::repaired_shards(Self) -> Int32
 
 pub struct ObjectEncoder {
   codec : Codec
   manifest : Manifest
-  mut pending : Array[Byte]
-  mut accepted_bytes : Int
-  mut emitted_stripes : Int
+  mut accepted_bytes : Int32
+  mut emitted_stripes : Int32
+  // private fields
 }
-pub fn ObjectEncoder::accepted_bytes(Self) -> Int
-pub fn ObjectEncoder::buffered_bytes(Self) -> Int
-pub fn ObjectEncoder::emitted_stripes(Self) -> Int
+pub fn ObjectEncoder::accepted_bytes(Self) -> Int32
+pub fn ObjectEncoder::buffered_bytes(Self) -> Int32
+pub fn ObjectEncoder::emitted_stripes(Self) -> Int32
 pub fn ObjectEncoder::finish(Self) -> Manifest raise ErasureError
 pub fn ObjectEncoder::manifest(Self) -> Manifest
-pub fn ObjectEncoder::new(Codec, Int, Int, stripe_payload_limit? : Int, max_object_bytes? : Int) -> Self raise ErasureError
+pub fn ObjectEncoder::new(Codec, Int32, Int32, stripe_payload_limit? : Int32, max_object_bytes? : Int32) -> Self raise ErasureError
 pub fn ObjectEncoder::push(Self, Bytes) -> Array[ShardEnvelope] raise ErasureError
 
 pub struct ObjectHealth {
-  stripes : Array[StripeHealth]
-  healthy_count : Int
-  repairable_count : Int
-  unrecoverable_count : Int
-  invalid_count : Int
+  healthy_count : Int32
+  repairable_count : Int32
+  unrecoverable_count : Int32
+  invalid_count : Int32
+  // private fields
 }
 pub fn ObjectHealth::fully_recoverable(Self) -> Bool
-pub fn ObjectHealth::healthy_count(Self) -> Int
-pub fn ObjectHealth::invalid_count(Self) -> Int
-pub fn ObjectHealth::repairable_count(Self) -> Int
+pub fn ObjectHealth::healthy_count(Self) -> Int32
+pub fn ObjectHealth::invalid_count(Self) -> Int32
+pub fn ObjectHealth::repairable_count(Self) -> Int32
 pub fn ObjectHealth::stripes(Self) -> Array[StripeHealth]
-pub fn ObjectHealth::unrecoverable_count(Self) -> Int
+pub fn ObjectHealth::unrecoverable_count(Self) -> Int32
 
 pub struct ObjectRecovery {
   payload : Bytes
-  repaired_shard_count : Int
-  stripe_count : Int
+  repaired_shard_count : Int32
+  stripe_count : Int32
 }
 pub fn ObjectRecovery::payload(Self) -> Bytes
-pub fn ObjectRecovery::repaired_shard_count(Self) -> Int
-pub fn ObjectRecovery::stripe_count(Self) -> Int
+pub fn ObjectRecovery::repaired_shard_count(Self) -> Int32
+pub fn ObjectRecovery::stripe_count(Self) -> Int32
 
 pub struct ObjectRepair {
-  replacements : Array[ShardEnvelope]
-  repaired_stripes : Int
+  repaired_stripes : Int32
+  // private fields
 }
-pub fn ObjectRepair::repaired_stripes(Self) -> Int
-pub fn ObjectRepair::replacement_count(Self) -> Int
+pub fn ObjectRepair::repaired_stripes(Self) -> Int32
+pub fn ObjectRepair::replacement_count(Self) -> Int32
 pub fn ObjectRepair::replacements(Self) -> Array[ShardEnvelope]
 
 pub struct RecoverableRange {
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
 }
-pub fn RecoverableRange::end(Self) -> Int
-pub fn RecoverableRange::length(Self) -> Int
-pub fn RecoverableRange::start(Self) -> Int
+pub fn RecoverableRange::end(Self) -> Int32
+pub fn RecoverableRange::length(Self) -> Int32
+pub fn RecoverableRange::start(Self) -> Int32
 
 pub struct RecoverySession {
   codec : Codec
-  entries : Array[DecoderEntry]
-  capacity : Int
-  mut next_evict : Int
-  mut hits : Int
-  mut misses : Int
+  capacity : Int32
+  mut next_evict : Int32
+  mut hits : Int32
+  mut misses : Int32
+  // private fields
 }
-pub fn RecoverySession::cache_hits(Self) -> Int
-pub fn RecoverySession::cache_misses(Self) -> Int
-pub fn RecoverySession::cache_size(Self) -> Int
-pub fn RecoverySession::new(Codec, max_patterns? : Int) -> Self raise ErasureError
+pub fn RecoverySession::cache_hits(Self) -> Int32
+pub fn RecoverySession::cache_misses(Self) -> Int32
+pub fn RecoverySession::cache_size(Self) -> Int32
+pub fn RecoverySession::new(Codec, max_patterns? : Int32) -> Self raise ErasureError
 pub fn RecoverySession::reconstruct(Self, Array[Bytes?]) -> Array[Bytes] raise ErasureError
 
 pub struct RepairPlan {
-  required : Int
-  available : Int
-  selected_indices : Array[Int]
-  missing_data_indices : Array[Int]
-  missing_parity_indices : Array[Int]
+  required : Int32
+  available : Int32
+  // private fields
 }
-pub fn RepairPlan::available(Self) -> Int
-pub fn RepairPlan::minimum_additional_shards(Self) -> Int
-pub fn RepairPlan::missing_data_indices(Self) -> Array[Int]
-pub fn RepairPlan::missing_parity_indices(Self) -> Array[Int]
+pub fn RepairPlan::available(Self) -> Int32
+pub fn RepairPlan::minimum_additional_shards(Self) -> Int32
+pub fn RepairPlan::missing_data_indices(Self) -> Array[Int32]
+pub fn RepairPlan::missing_parity_indices(Self) -> Array[Int32]
 pub fn RepairPlan::needs_decode(Self) -> Bool
 pub fn RepairPlan::recoverable(Self) -> Bool
-pub fn RepairPlan::required(Self) -> Int
-pub fn RepairPlan::selected_indices(Self) -> Array[Int]
+pub fn RepairPlan::required(Self) -> Int32
+pub fn RepairPlan::selected_indices(Self) -> Array[Int32]
 
 pub struct ScannedObjectHealth {
   health : ObjectHealth
-  issues : Array[FrameIssue]
+  // private fields
 }
 pub fn ScannedObjectHealth::health(Self) -> ObjectHealth
 pub fn ScannedObjectHealth::issues(Self) -> Array[FrameIssue]
 
 pub struct ScannedObjectRecovery {
   recovery : ObjectRecovery
-  issues : Array[FrameIssue]
+  // private fields
 }
 pub fn ScannedObjectRecovery::issues(Self) -> Array[FrameIssue]
 pub fn ScannedObjectRecovery::recovery(Self) -> ObjectRecovery
 
 pub struct ScannedObjectRepair {
   repair : ObjectRepair
-  issues : Array[FrameIssue]
+  // private fields
 }
 pub fn ScannedObjectRepair::issues(Self) -> Array[FrameIssue]
 pub fn ScannedObjectRepair::repair(Self) -> ObjectRepair
 
 pub struct ScannedRangeRecovery {
   payload : Bytes
-  issues : Array[FrameIssue]
+  // private fields
 }
 pub fn ScannedRangeRecovery::issues(Self) -> Array[FrameIssue]
 pub fn ScannedRangeRecovery::payload(Self) -> Bytes
 
 pub struct ScannedRecovery {
   recovery : StripeRecovery
-  issues : Array[FrameIssue]
+  // private fields
 }
 pub fn ScannedRecovery::issues(Self) -> Array[FrameIssue]
 pub fn ScannedRecovery::recovery(Self) -> StripeRecovery
 
 pub struct ShardEnvelope {
-  set_id : Int
-  stripe_index : Int
-  shard_index : Int
-  data_count : Int
-  parity_count : Int
-  original_length : Int
+  set_id : Int32
+  stripe_index : Int32
+  shard_index : Int32
+  data_count : Int32
+  parity_count : Int32
+  original_length : Int32
   payload : Bytes
 }
-pub fn ShardEnvelope::data_count(Self) -> Int
-pub fn ShardEnvelope::from_bytes(Bytes, max_encoded_bytes? : Int) -> Self raise ErasureError
-pub fn ShardEnvelope::new(Codec, Int, Int, Int, Int, Bytes) -> Self raise ErasureError
-pub fn ShardEnvelope::original_length(Self) -> Int
-pub fn ShardEnvelope::parity_count(Self) -> Int
+pub fn ShardEnvelope::data_count(Self) -> Int32
+pub fn ShardEnvelope::from_bytes(Bytes, max_encoded_bytes? : Int32) -> Self raise ErasureError
+pub fn ShardEnvelope::new(Codec, Int32, Int32, Int32, Int32, Bytes) -> Self raise ErasureError
+pub fn ShardEnvelope::original_length(Self) -> Int32
+pub fn ShardEnvelope::parity_count(Self) -> Int32
 pub fn ShardEnvelope::payload(Self) -> Bytes
-pub fn ShardEnvelope::set_id(Self) -> Int
-pub fn ShardEnvelope::shard_index(Self) -> Int
-pub fn ShardEnvelope::stripe_index(Self) -> Int
+pub fn ShardEnvelope::set_id(Self) -> Int32
+pub fn ShardEnvelope::shard_index(Self) -> Int32
+pub fn ShardEnvelope::stripe_index(Self) -> Int32
 pub fn ShardEnvelope::to_bytes(Self) -> Bytes
 
 pub struct StripeHealth {
-  stripe_index : Int
+  stripe_index : Int32
   status : StripeStatus
-  present_count : Int
-  missing_indices : Array[Int]
+  present_count : Int32
   reason_code : String?
+  // private fields
 }
-pub fn StripeHealth::missing_indices(Self) -> Array[Int]
-pub fn StripeHealth::present_count(Self) -> Int
+pub fn StripeHealth::missing_indices(Self) -> Array[Int32]
+pub fn StripeHealth::present_count(Self) -> Int32
 pub fn StripeHealth::reason_code(Self) -> String?
 pub fn StripeHealth::status(Self) -> StripeStatus
-pub fn StripeHealth::stripe_index(Self) -> Int
+pub fn StripeHealth::stripe_index(Self) -> Int32
 
 pub struct StripeRecovery {
   payload : Bytes
-  shards : Array[ShardEnvelope]
-  missing_indices : Array[Int]
-  provided_count : Int
+  provided_count : Int32
+  // private fields
 }
-pub fn StripeRecovery::missing_indices(Self) -> Array[Int]
+pub fn StripeRecovery::missing_indices(Self) -> Array[Int32]
 pub fn StripeRecovery::payload(Self) -> Bytes
-pub fn StripeRecovery::provided_count(Self) -> Int
+pub fn StripeRecovery::provided_count(Self) -> Int32
 pub fn StripeRecovery::shards(Self) -> Array[ShardEnvelope]
 
 pub(all) enum StripeStatus {

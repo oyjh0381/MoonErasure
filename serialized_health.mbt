@@ -3,7 +3,7 @@
 /// position, while stripe status is computed from surviving valid frames.
 pub struct ScannedObjectHealth {
   health : ObjectHealth
-  issues : Array[FrameIssue]
+  priv issues : Array[FrameIssue]
 }
 
 ///|

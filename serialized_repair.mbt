@@ -3,7 +3,7 @@
 /// position and treated as absent; replacement frames are checksum-protected.
 pub struct ScannedObjectRepair {
   repair : ObjectRepair
-  issues : Array[FrameIssue]
+  priv issues : Array[FrameIssue]
 }
 
 ///|

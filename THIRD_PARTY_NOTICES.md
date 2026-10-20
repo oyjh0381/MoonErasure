@@ -9,3 +9,5 @@ Its locked development-only indirect dependencies are [`klauspost/cpuid/v2` v2.3
 The hand-computed byte vector in `codec_properties_test.mbt` follows directly from this project's documented normalized matrix construction. The example strings are original synthetic text. No third-party images, binary assets, credentials or private code are included.
 
 The project license is [Apache License 2.0](LICENSE), an OSI-approved license. Users must separately check licenses for applications and data they combine with this library.
+
+The optional tools/windows argv compatibility utility is reused from the workspace MoonUriTemplate/MoonTUF Apache-2.0 utility. It only launches official tools with normalized DOS path prefixes. The new range_update functionality and tests are original, AI-assisted MoonBit code; no external implementation was copied.

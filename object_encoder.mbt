@@ -4,7 +4,7 @@
 pub struct ObjectEncoder {
   codec : Codec
   manifest : Manifest
-  mut pending : Array[Byte]
+  priv mut pending : Array[Byte]
   mut accepted_bytes : Int32
   mut emitted_stripes : Int32
 }

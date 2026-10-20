@@ -3,7 +3,7 @@
 /// storage adapter may use it to decide which stripe to fetch or repair.
 pub struct FrameCatalog {
   manifest : Manifest
-  slots : Array[ShardEnvelope?]
+  priv slots : Array[ShardEnvelope?]
   mut stored_count : Int32
 }
 

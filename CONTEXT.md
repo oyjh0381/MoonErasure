@@ -17,3 +17,5 @@
 **Envelope** — A versioned, bounded byte record containing shard identity, lengths and a checksum so a damaged or mismatched shard can be rejected before repair.
 
 **Manifest** — The caller-visible description of a multi-stripe payload: stripe order, original length and codec configuration. It is not a cryptographic authenticity claim.
+
+**字节区间校验更新**: update_parity_ranges 仅需变化区间的旧/新字节，支持同片不重叠多区间和严格预算；完整校验片仍会复制。

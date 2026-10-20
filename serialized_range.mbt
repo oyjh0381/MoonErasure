@@ -3,7 +3,7 @@
 /// structural validation.
 pub struct ScannedRangeRecovery {
   payload : Bytes
-  issues : Array[FrameIssue]
+  priv issues : Array[FrameIssue]
 }
 
 ///|

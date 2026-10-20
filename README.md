@@ -134,3 +134,9 @@ See [architecture](docs/ARCHITECTURE.md), [domain glossary](CONTEXT.md), [decisi
 `FrameCatalog::add_many(frames, max_frames?)` 在分离槽表上验证所有已解析帧，成功才提交；外部帧字节须先经 CRC 解析，批量操作不提供跨线程或持久化事务。`recoverable_ranges(max_ranges?)` 返回分片数量足够的最大连续半开字节区间，不解码整对象，也不认证分片内容。范围读取的参数是起点和长度：`recover_range(range.start(), range.length())`。
 
 运行 `moon run examples/maintenance --target wasm-gc`，展示两段可恢复数据与中间缺失条带。详见 [功能与边界](docs/OCTOBER_FEATURES.md)。
+
+## 当前源码新增：字节区间校验更新
+
+update_parity_ranges 仅需变化区间的旧/新字节，支持同片不重叠多区间和严格预算；完整校验片仍会复制。
+
+运行 `moon run examples/range_update --target wasm-gc`，详见[功能、预算与边界](docs/RANGE_UPDATES.md)。本轮适配官方 MoonBit 0.10.16；受影响的 Windows 环境以 `./tools/windows/moon.ps1` 替代 `moon`。这些修改尚未发布到公共包。

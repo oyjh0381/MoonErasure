@@ -4,9 +4,9 @@
 pub struct RepairPlan {
   required : Int32
   available : Int32
-  selected_indices : Array[Int32]
-  missing_data_indices : Array[Int32]
-  missing_parity_indices : Array[Int32]
+  priv selected_indices : Array[Int32]
+  priv missing_data_indices : Array[Int32]
+  priv missing_parity_indices : Array[Int32]
 }
 
 ///|

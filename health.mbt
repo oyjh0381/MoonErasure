@@ -22,7 +22,7 @@ pub struct StripeHealth {
   stripe_index : Int32
   status : StripeStatus
   present_count : Int32
-  missing_indices : Array[Int32]
+  priv missing_indices : Array[Int32]
   reason_code : String?
 }
 
@@ -143,7 +143,7 @@ pub fn inspect_stripe(
 
 ///|
 pub struct ObjectHealth {
-  stripes : Array[StripeHealth]
+  priv stripes : Array[StripeHealth]
   healthy_count : Int32
   repairable_count : Int32
   unrecoverable_count : Int32

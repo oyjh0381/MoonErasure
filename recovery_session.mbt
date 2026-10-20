@@ -10,7 +10,7 @@ struct DecoderEntry {
 /// used for concurrent callers. Cached matrices contain no payload bytes.
 pub struct RecoverySession {
   codec : Codec
-  entries : Array[DecoderEntry]
+  priv entries : Array[DecoderEntry]
   capacity : Int32
   mut next_evict : Int32
   mut hits : Int32

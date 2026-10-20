@@ -10,20 +10,35 @@ permissions:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install MoonBit
-        run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
-          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - uses: hustcer/setup-moonbit@v1.23
       - name: Toolchain
         run: moon version --all
+      - name: Windows OCaml path compatibility
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          & ./tools/windows/build-shim.ps1
+          $shim = Join-Path $env:GITHUB_WORKSPACE '_build/windows-path-shims'
+          "MOONC_OVERRIDE=$shim/moonc.exe" >> $env:GITHUB_ENV
+          "MOONFMT_OVERRIDE=$shim/moonfmt.exe" >> $env:GITHUB_ENV
+          "MOONINFO_OVERRIDE=$shim/mooninfo.exe" >> $env:GITHUB_ENV
+          $env:MOONC_OVERRIDE = "$shim/moonc.exe"
+          Push-Location (Join-Path $env:USERPROFILE '.moon/lib/core')
+          moon bundle --all --warn-list -a
+          Pop-Location
       - uses: actions/setup-go@v6
         with:
           go-version-file: tools/reference/go.mod
           cache-dependency-path: tools/reference/go.sum
       - name: Regenerate pinned reference vectors
+        shell: bash
         run: |
           mkdir -p testdata
           (cd tools/reference && go run . > ../../testdata/reedsolomon-v1.14.2.json)
@@ -47,6 +62,7 @@ jobs:
           moon run examples/degraded_read --target wasm-gc
           moon run examples/incremental_update --target wasm-gc
           moon run examples/selective_repair --target wasm-gc
+          moon run examples/range_update --target wasm-gc
       - name: Verify formatting and public interfaces
         run: |
           moon fmt

@@ -3,7 +3,7 @@
 pub struct Matrix {
   rows : Int32
   cols : Int32
-  cells : Array[Array[Int32]]
+  priv cells : Array[Array[Int32]]
 }
 
 ///|

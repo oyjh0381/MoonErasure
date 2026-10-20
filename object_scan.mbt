@@ -2,7 +2,7 @@
 /// Object recovery together with diagnostics for rejected raw frame positions.
 pub struct ScannedObjectRecovery {
   recovery : ObjectRecovery
-  issues : Array[FrameIssue]
+  priv issues : Array[FrameIssue]
 }
 
 ///|

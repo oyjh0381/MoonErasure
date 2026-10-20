@@ -2,7 +2,7 @@
 /// A bounded in-memory object ready for caller-controlled placement.
 pub struct EncodedObject {
   manifest : Manifest
-  frames : Array[ShardEnvelope]
+  priv frames : Array[ShardEnvelope]
 }
 
 ///|

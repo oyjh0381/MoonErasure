@@ -18,8 +18,8 @@ pub fn FrameIssue::code(self : FrameIssue) -> String {
 
 ///|
 pub struct FrameScan {
-  valid : Array[ShardEnvelope]
-  issues : Array[FrameIssue]
+  priv valid : Array[ShardEnvelope]
+  priv issues : Array[FrameIssue]
 }
 
 ///|
@@ -94,7 +94,7 @@ pub fn scan_frames(
 ///|
 pub struct ScannedRecovery {
   recovery : StripeRecovery
-  issues : Array[FrameIssue]
+  priv issues : Array[FrameIssue]
 }
 
 ///|

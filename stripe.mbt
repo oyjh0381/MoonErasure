@@ -2,8 +2,8 @@
 /// A complete repaired stripe plus information about which shards were absent.
 pub struct StripeRecovery {
   payload : Bytes
-  shards : Array[ShardEnvelope]
-  missing_indices : Array[Int32]
+  priv shards : Array[ShardEnvelope]
+  priv missing_indices : Array[Int32]
   provided_count : Int32
 }
 

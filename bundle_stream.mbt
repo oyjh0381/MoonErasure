@@ -2,14 +2,14 @@
 /// Incremental parser for a complete bundle. Completed, checksum-validated
 /// frames are returned from `push` and are not retained by the parser.
 pub struct BundleStream {
-  mut pending : Array[Byte]
+  priv mut pending : Array[Byte]
   mut cursor : Int32
   mut stage : Int32
   mut expected_frames : Int32
   mut parsed_frames : Int32
   mut next_frame_length : Int32
   mut manifest : Manifest?
-  mut seen : Array[Bool]
+  priv mut seen : Array[Bool]
   mut received_bytes : Int32
   max_input_bytes : Int32
   max_object_bytes : Int32
