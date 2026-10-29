@@ -10,6 +10,19 @@ MoonErasure is a MoonBit library for systematic Reed–Solomon erasure coding ov
 
 The library supports complete objects, bounded stripes, independent checksum-protected frames, repair plans, range reads, incremental encoding and decoding, a portable single-file bundle format, and health inspection. The code is original MoonBit and runs on `wasm`, `wasm-gc`, `js` and `native` targets.
 
+## 0.3.0：区间更新与放置感知修复
+
+- `Codec::update_parity_ranges` 仅提供变化区间的旧/新字节即可更新校验片，避免读取未修改的数据区域。
+- `Codec::plan_costed` 从已知完好的分片中选择最低非负成本的恢复集合，成本相同按编号稳定选择，并检查总成本溢出。
+- `Codec::assess_domains` 按当前丢失状态评估单个机架或区域损失后的剩余分片和恢复缺口。
+
+要求 **moonc >= 0.10.16**。成本是宿主权重，故障域分析不推断概率，也不代替分片完整性校验；详见[成本与故障域 API](docs/FEATURE_EXTENSIONS.md)及[区间更新](docs/RANGE_UPDATES.md)。
+
+```sh
+moon run examples/placement --target wasm-gc --deny-warn
+moon run examples/range_update --target wasm-gc --deny-warn
+```
+
 ## Why this project
 
 MoonBit applications that distribute backups or packets need a reusable redundancy layer. A backup can tolerate loss of any `m` independent shards per stripe without retaining `m` complete replicas. An edge transfer can tolerate lost packets; a storage scrubber can identify damaged frames and regenerate only missing slots. The codec exposes multi-shard recovery, bounded object assembly and repair planning as reusable byte operations.
@@ -19,7 +32,7 @@ MoonBit applications that distribute backups or packets need a reusable redundan
 Install the [MoonBit toolchain](https://docs.moonbitlang.com/en/latest/toolchain/), then add the published library:
 
 ```sh
-moon add oyjh0381/moonerasure@0.2.0
+moon add oyjh0381/moonerasure@0.3.0
 ```
 
 Import the library in your application's `moon.pkg`:
@@ -135,19 +148,8 @@ See [architecture](docs/ARCHITECTURE.md), [domain glossary](CONTEXT.md), [decisi
 
 运行 `moon run examples/maintenance --target wasm-gc`，展示两段可恢复数据与中间缺失条带。详见 [功能与边界](docs/OCTOBER_FEATURES.md)。
 
-## 当前源码新增：字节区间校验更新
+## 字节区间校验更新（0.3.0）
 
 update_parity_ranges 仅需变化区间的旧/新字节，支持同片不重叠多区间和严格预算；完整校验片仍会复制。
 
-运行 `moon run examples/range_update --target wasm-gc`，详见[功能、预算与边界](docs/RANGE_UPDATES.md)。本轮适配官方 MoonBit 0.10.16；受影响的 Windows 环境以 `./tools/windows/moon.ps1` 替代 `moon`。这些修改尚未发布到公共包。
-
-## Source-workspace extensions (unreleased)
-
-Compiler requirement: **moonc >= 0.10.16**. See
-[the API, scope and complexity notes](docs/FEATURE_EXTENSIONS.md) for **成本感知修复与故障域暴露分析**.
-These additions are available in this source tree; the previously published package
-version does not yet contain them. Run the assertion-based example from the repository:
-
-```sh
-moon run examples/placement --target wasm-gc --deny-warn
-```
+运行 `moon run examples/range_update --target wasm-gc`，详见[功能、预算与边界](docs/RANGE_UPDATES.md)。本轮适配官方 MoonBit 0.10.16；受影响的 Windows 环境以 `./tools/windows/moon.ps1` 替代 `moon`。以上接口从 0.3.0 起提供。

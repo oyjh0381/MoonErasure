@@ -1,7 +1,7 @@
 # Byte-range parity updates
 
-Current source adds `Codec::update_parity_ranges(parity, changes)`; published
-0.2.0 contains whole-shard updates, not this new API. A `DataRangeUpdate` gives
+Version **0.3.0** adds `Codec::update_parity_ranges(parity, changes)`; version
+0.2.0 contains whole-shard updates, not this API. A `DataRangeUpdate` gives
 data-shard index, byte offset, equal-length nonempty old/new byte ranges. The
 operation does not require unchanged data or unchanged regions of changed data.
 It returns detached full parity shards and never mutates inputs.

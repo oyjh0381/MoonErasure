@@ -44,6 +44,7 @@ moon run examples/placement --target native --deny-warn
 ```
 
 Windows 如遇 OCaml 扩展路径问题，使用仓库提供的 `tools/windows/moon.ps1`
-代替 `moon`；没有该脚本的仓库建议在 Linux/WSL 环境运行上述命令。
-这些是源码工作区新增 API，现有已发布版本号未变；发布新版本后才可从 Mooncakes
-安装取得这些新增功能。全部示例为可运行断言，不代表已有生产部署。
+代替 `moon`。
+
+以上 API 从 **0.3.0** 起提供：`moon add oyjh0381/moonerasure@0.3.0`。
+全部示例为可运行断言，不代表已有生产部署。
