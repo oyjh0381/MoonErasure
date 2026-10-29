@@ -43,7 +43,7 @@ moon test --target all --deny-warn
 moon run cmd/main --target wasm-gc
 ```
 
-The Mooncakes module name is `oyjh0381/moonerasure`. No third-party runtime packages are required. Development uses MoonBit compiler v0.10.15 or later. Version 0.1.0 does not include the selective-recovery or delta-update methods added in 0.2.0.
+The Mooncakes module name is `oyjh0381/moonerasure`. No third-party runtime packages are required. Development uses MoonBit compiler v0.10.16 or later. Version 0.1.0 does not include the selective-recovery or delta-update methods added in 0.2.0.
 
 ## Core operations and explicit inputs
 
@@ -140,3 +140,14 @@ See [architecture](docs/ARCHITECTURE.md), [domain glossary](CONTEXT.md), [decisi
 update_parity_ranges 仅需变化区间的旧/新字节，支持同片不重叠多区间和严格预算；完整校验片仍会复制。
 
 运行 `moon run examples/range_update --target wasm-gc`，详见[功能、预算与边界](docs/RANGE_UPDATES.md)。本轮适配官方 MoonBit 0.10.16；受影响的 Windows 环境以 `./tools/windows/moon.ps1` 替代 `moon`。这些修改尚未发布到公共包。
+
+## Source-workspace extensions (unreleased)
+
+Compiler requirement: **moonc >= 0.10.16**. See
+[the API, scope and complexity notes](docs/FEATURE_EXTENSIONS.md) for **成本感知修复与故障域暴露分析**.
+These additions are available in this source tree; the previously published package
+version does not yet contain them. Run the assertion-based example from the repository:
+
+```sh
+moon run examples/placement --target wasm-gc --deny-warn
+```

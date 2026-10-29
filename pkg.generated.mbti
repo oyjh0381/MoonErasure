@@ -84,6 +84,7 @@ pub struct Codec {
   generator : Matrix
   field : Field
 }
+pub fn Codec::assess_domains(Self, Array[Bool], Array[String]) -> Array[DomainExposure] raise ErasureError
 pub fn Codec::data_count(Self) -> Int32
 pub fn Codec::encode(Self, Array[Bytes]) -> Array[Bytes] raise ErasureError
 pub fn Codec::encode_all(Self, Array[Bytes]) -> Array[Bytes] raise ErasureError
@@ -91,12 +92,20 @@ pub fn Codec::max_shard_bytes(Self) -> Int32
 pub fn Codec::new(Int32, Int32, max_encoded_bytes? : Int32) -> Self raise ErasureError
 pub fn Codec::parity_count(Self) -> Int32
 pub fn Codec::plan(Self, Array[Bool]) -> RepairPlan raise ErasureError
+pub fn Codec::plan_costed(Self, Array[Bool], Array[Int64]) -> CostedRepairPlan raise ErasureError
 pub fn Codec::reconstruct(Self, Array[Bytes?]) -> Array[Bytes] raise ErasureError
 pub fn Codec::reconstruct_selected(Self, Array[Bytes?], Array[Int32]) -> Array[Bytes] raise ErasureError
 pub fn Codec::total_count(Self) -> Int32
 pub fn Codec::update_parity(Self, Array[Bytes], Array[DataShardUpdate]) -> Array[Bytes] raise ErasureError
 pub fn Codec::update_parity_ranges(Self, Array[Bytes], Array[DataRangeUpdate], max_ranges? : Int32, max_changed_bytes? : Int32) -> Array[Bytes] raise ErasureError
 pub fn Codec::verify(Self, Array[Bytes]) -> Bool raise ErasureError
+
+pub struct CostedRepairPlan {
+  total_cost : Int64
+  // private fields
+}
+pub fn CostedRepairPlan::plan(Self) -> RepairPlan
+pub fn CostedRepairPlan::total_cost(Self) -> Int64
 
 pub(all) struct DataRangeUpdate {
   index : Int32
@@ -112,6 +121,18 @@ pub(all) struct DataShardUpdate {
 }
 
 type DecoderEntry
+
+pub struct DomainExposure {
+  domain : String
+  lost_available : Int32
+  remaining : Int32
+  spare : Int32
+}
+pub fn DomainExposure::domain(Self) -> String
+pub fn DomainExposure::lost_available(Self) -> Int32
+pub fn DomainExposure::recoverable(Self) -> Bool
+pub fn DomainExposure::remaining(Self) -> Int32
+pub fn DomainExposure::spare(Self) -> Int32
 
 pub struct EncodedObject {
   manifest : Manifest

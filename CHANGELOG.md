@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- 成本感知修复与故障域暴露分析，含资源边界、回归测试及 `examples/placement`。
+- CI 显式验证 moonc >= 0.10.16，并运行新增示例。
+
 ## Unreleased — 2026-10-20
 
 - 字节区间校验更新；增加公开接口测试及可运行场景。

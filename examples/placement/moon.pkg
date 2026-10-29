@@ -1,0 +1,5 @@
+import {
+  "oyjh0381/moonerasure" @ec,
+}
+
+pkgtype(kind: "executable")

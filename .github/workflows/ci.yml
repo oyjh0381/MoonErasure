@@ -45,6 +45,10 @@ jobs:
           python tools/generate_reference_tests.py
           moon fmt
           git diff --exit-code
+      - name: Minimum compiler version
+        run: python tools/verify_toolchain.py
+      - name: Run extension scenario
+        run: moon run examples/placement --target wasm-gc --deny-warn
       - name: Check all backends
         run: moon check --target all --deny-warn
       - name: Build all backends
